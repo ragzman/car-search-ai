@@ -1,0 +1,8 @@
+<div>
+    <div *ngFor="let message of chatHistory">
+      {{ message }}
+    </div>
+    <input type="text" [(ngModel)]="userInput" placeholder="Type your message..." />
+    <button (click)="sendMessage()">Send</button>
+  </div>
+  
