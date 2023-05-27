@@ -1,8 +1,8 @@
 <div>
-    <div *ngFor="let message of chatHistory">
-      {{ message }}
+    <div *ngFor="let chatMessage of chatHistory">
+      {{ chatMessage.userType }} : {{chatMessage.text}}
     </div>
-    <input type="text" [(ngModel)]="userInput" placeholder="Type your message..." />
+    <input type="text" [(ngModel)]="userInput" placeholder="Type your message..." (keyup.enter)="sendMessage()" />
     <button (click)="sendMessage()">Send</button>
   </div>
   

@@ -4,7 +4,8 @@ import logging
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from models.ChatMessage import ChatMessage
+from models.chat_message import ChatMessage
+from models.chat_user_type import ChatUserType
 
 app = FastAPI()
 
@@ -39,10 +40,8 @@ async def websocket_endpoint(websocket: WebSocket):
 
             # Process user input and generate bot response
             # Replace this with your chatbot logic
-            bot_response = f"This is the bot's response to: {cm.text}"
-
             # Send bot response to frontend
-            response = ChatMessage("ai", "something AI said.")
+            response = ChatMessage(ChatUserType.AI,f"This is the bot's response to: {cm.text}")
             await websocket.send_json(response.json())
 
         except WebSocketDisconnect:

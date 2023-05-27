@@ -3,6 +3,17 @@ import { webSocket } from 'rxjs/webSocket';
 import { HttpHeaders } from '@angular/common/http';
 import { Observer } from 'rxjs';
 
+// TODO: move this to some model package. 
+export interface ChatMessage {
+  userType: UserType;
+  text: string;
+}
+
+export enum UserType {
+  AI = 'AI',
+  HUMAN = 'HUMAN'
+}
+
 
 @Component({
   selector: 'app-chatbot',
@@ -10,7 +21,7 @@ import { Observer } from 'rxjs';
   styleUrls: ['./chatbot.component.css']
 })
 export class ChatbotComponent {
-  chatHistory: string[] = [];
+  chatHistory: ChatMessage[] = [];
   userInput: string = '';
 
   sendMessage() {
@@ -33,14 +44,17 @@ export class ChatbotComponent {
       }
     });
 
-    const message = { text: this.userInput, userType: "human" };
+    const message = { text: this.userInput, userType: UserType.HUMAN };
+    this.chatHistory.push(message)
     console.log(message)
 
     const observer: Observer<any> = {
       next: (data: any) => {
+        console.log(data)
+        // TODO: validate the incoming message. 
         // Handle received data from the backend
         // and update the chat history
-        this.chatHistory.push(data.message);
+        this.chatHistory.push(data);
       },
       error: (error: any) => console.error('WebSocket error:', error),
       complete: () => console.log('WebSocket connection completed.')
