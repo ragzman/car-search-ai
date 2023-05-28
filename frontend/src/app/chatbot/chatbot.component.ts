@@ -16,7 +16,7 @@ export enum UserType {
 
 
 @Component({
-  selector: 'app-chatbot',
+  selector: 'ai-chatbot',
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.css']
 })
