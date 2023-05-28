@@ -1,40 +1,29 @@
 <div>
-  <div class="chat-history" #chatHistoryRef>
-    <div *ngFor="let message of chatHistory; let index = index" class="message-container">
+  <div class="chat-history" #scrollableAreaRef>
+    <div *ngFor="let message of chatHistory; let index = index"
+      [ngClass]="{'message-container': true, 'fade-in': index === chatHistory.length - 1}">
       <ng-container *ngIf="message.userType === 'AI'; else userMessage">
-        <div #autoScrollRef></div>
         <div class="message">
           <img src="assets/icons/bot.png" alt="AI" width="25" height="25" class="bot-icon" />
           <div class="message-text">
             {{ message.text}}
           </div>
         </div>
-        <div #autoScrollRef></div>
       </ng-container>
 
       <ng-template #userMessage>
-        <div #autoScrollRef></div>
         <div class="message">
-          <img src="assets/icons/usericon.png" alt="Me" width="25" height="25" class="user-icon" />
-          <div [ngClass]="{
-                'user-message-waiting': loading && index === chatHistory.length - 1,
-                'user-message': !loading || index !== chatHistory.length - 1
-              }">
+          <img src="assets/icons/usericon.png" alt="Human" width="25" height="25" class="user-icon" />
+          <div class="message-text">
             {{ message.text}}
           </div>
         </div>
-        <div #autoScrollRef></div>
       </ng-template>
     </div>
   </div>
 </div>
 <div class="input-area">
   <form (ngSubmit)="sendMessage()">
-    <div class="scrollable-area" #scrollableAreaRef>
-      <div>
-        <div #autoScrollRef></div>
-      </div>
-    </div>
     <div class="input-wrapper">
       <textarea [disabled]="loading" (keyup.enter)="sendMessage()" #textAreaRef [autofocus]="false" rows="2"
         maxLength="512" id="userInput" name="userInput"

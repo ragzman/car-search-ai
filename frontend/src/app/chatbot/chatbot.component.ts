@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
+
 import { webSocket } from 'rxjs/webSocket';
 import { HttpHeaders } from '@angular/common/http';
 import { Observer } from 'rxjs';
@@ -20,7 +21,9 @@ export enum UserType {
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.css']
 })
-export class ChatbotComponent {
+export class ChatbotComponent implements AfterViewChecked {
+  
+
   chatHistory: ChatMessage[] = [];
   userInput: string = '';
   loading: boolean = false;
@@ -69,6 +72,19 @@ export class ChatbotComponent {
 
     // Clear the user input field
     this.userInput = '';
+  }
+
+
+  @ViewChild('scrollableAreaRef', { static: false }) scrollableAreaRef!: ElementRef;
+  
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
+  }
+
+  scrollToBottom() {
+    try {
+      this.scrollableAreaRef.nativeElement.scrollTop = this.scrollableAreaRef.nativeElement.scrollHeight;
+    } catch (err) { }
   }
 
 

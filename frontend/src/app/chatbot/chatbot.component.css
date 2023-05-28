@@ -2,6 +2,23 @@
     height: 200px; /* Set the desired height of the chat history area */
     overflow-y: auto;
   }
+
+  .chat-history::-webkit-scrollbar {
+    width: 10px; /* Adjust the width of the scroll bar */
+  }
+  
+  .chat-history::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Choose a suitable background color */
+  }
+  
+  .chat-history::-webkit-scrollbar-thumb {
+    background: #888; /* Choose a suitable color for the scroll bar thumb */
+    border-radius: 5px;
+  }
+  
+  .chat-history::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Choose a suitable color for the scroll bar thumb on hover */
+  }
   
   .input-area {
     position: sticky;
@@ -10,6 +27,7 @@
     padding: 10px;
     display: flex;
     align-items: center;
+    width: 100%; 
   }
   
   .scrollable-area {
@@ -26,10 +44,14 @@
   .textarea {
     flex-grow: 1;
     resize: none;
+    padding: 10px;
+    overflow-wrap: break-word; 
   }
   
   .generate-button {
     margin-left: 10px;
+    padding: 10px 20px; /* Adjust the padding as desired */
+    /* Add other styling properties as needed */
   }
   
   /* Additional styling (optional) */
@@ -52,4 +74,41 @@
     word-wrap: break-word;
     word-break: break-all;
     max-width: 40ch;
+  }
+
+  .message-container {
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  .user-message {
+    background-color: #e6f2ff; /* Choose a suitable background color */
+    border-radius: 5px;
+    padding: 5px;
+  }
+
+  .generate-button {
+    background-color: #4caf50; /* Choose a suitable background color */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .generate-button:hover {
+    background-color: #45a049; /* Choose a suitable hover background color */
+  }
+
+  .fade-in {
+    animation: fade-in 0.5s ease-in-out;
+  }
+  
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
   }
