@@ -1,0 +1,55 @@
+.chat-history {
+    height: 200px; /* Set the desired height of the chat history area */
+    overflow-y: auto;
+  }
+  
+  .input-area {
+    position: sticky;
+    bottom: 0;
+    background-color: #f5f5f5;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .scrollable-area {
+    overflow-y: auto;
+    height: calc(100% - 40px); /* Adjust the height to leave space for the input area */
+  }
+  
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+  }
+  
+  .textarea {
+    flex-grow: 1;
+    resize: none;
+  }
+  
+  .generate-button {
+    margin-left: 10px;
+  }
+  
+  /* Additional styling (optional) */
+  
+  .bot-icon {
+    filter: invert(60%);
+  }
+  
+  .user-icon {
+    filter: invert(100%);
+  }
+  
+  .message {
+    display: flex;
+    align-items: center;
+  }
+  
+  .message-text {
+    margin-left: 10px;
+    word-wrap: break-word;
+    word-break: break-all;
+    max-width: 40ch;
+  }

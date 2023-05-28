@@ -23,6 +23,7 @@ export enum UserType {
 export class ChatbotComponent {
   chatHistory: ChatMessage[] = [];
   userInput: string = '';
+  loading: boolean = false;
 
   sendMessage() {
     const socketUrl = 'ws://localhost:8000/chat'; // Replace with your WebSocket URL
