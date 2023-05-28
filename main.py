@@ -6,6 +6,11 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from models.chat_message import ChatMessage
 from models.chat_user_type import ChatUserType
+from dotenv import load_dotenv
+from langchain.llms import OpenAI
+
+
+load_dotenv()  # Load environment variables from .env file
 
 app = FastAPI()
 
@@ -22,36 +27,9 @@ async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 # WebSocket endpoint
-@app.websocket("/chat")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-
-    while True:
-        try:
-            # Receive message from frontend
-            data = await websocket.receive_json()
-            # Validate and process the received message
-            try:
-                logging.info(data)
-                cm = ChatMessage(**data)
-            except ValidationErr as e:
-                await websocket.send_json({"error": str(e)})
-                continue
-
-            # Process user input and generate bot response
-            # Replace this with your chatbot logic
-            # Send bot response to frontend
-            response = ChatMessage(ChatUserType.AI,f"This is the bot's response to: {cm.text}")
-            await websocket.send_json(response.json())
-
-        except WebSocketDisconnect:
-            break
-
-    await websocket.close()
-
-# WebSocket endpoint
 @app.websocket("/aichat")
 async def websocket_endpoint(websocket: WebSocket):
+    llm = OpenAI(temperature=0.9)
     await websocket.accept()
 
     while True:
@@ -69,7 +47,9 @@ async def websocket_endpoint(websocket: WebSocket):
             # Process user input and generate bot response
             # Replace this with your chatbot logic
             # Send bot response to frontend
-            response = ChatMessage(ChatUserType.AI,f"This is the bot's response to: {cm.text}")
+            botResponse = llm(cm.text)
+            # logging.info(botResponse)
+            response = ChatMessage(ChatUserType.AI,botResponse)
             await websocket.send_json(response.json())
 
         except WebSocketDisconnect:

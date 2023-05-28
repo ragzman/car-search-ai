@@ -22,14 +22,14 @@ export enum UserType {
   styleUrls: ['./chatbot.component.css']
 })
 export class ChatbotComponent implements AfterViewChecked {
-  
+
 
   chatHistory: ChatMessage[] = [];
   userInput: string = '';
   loading: boolean = false;
 
   sendMessage() {
-    const socketUrl = 'ws://localhost:8000/chat'; // Replace with your WebSocket URL
+    const socketUrl = 'ws://localhost:8000/aichat'; // Replace with your WebSocket URL
 
     const headers = new HttpHeaders({
       // Add any necessary headers for authentication or other purposes
@@ -76,7 +76,7 @@ export class ChatbotComponent implements AfterViewChecked {
 
 
   @ViewChild('scrollableAreaRef', { static: false }) scrollableAreaRef!: ElementRef;
-  
+
   ngAfterViewChecked(): void {
     this.scrollToBottom();
   }
