@@ -49,6 +49,34 @@ async def websocket_endpoint(websocket: WebSocket):
 
     await websocket.close()
 
+# WebSocket endpoint
+@app.websocket("/aichat")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+
+    while True:
+        try:
+            # Receive message from frontend
+            data = await websocket.receive_json()
+            # Validate and process the received message
+            try:
+                logging.info(data)
+                cm = ChatMessage(**data)
+            except ValidationErr as e:
+                await websocket.send_json({"error": str(e)})
+                continue
+
+            # Process user input and generate bot response
+            # Replace this with your chatbot logic
+            # Send bot response to frontend
+            response = ChatMessage(ChatUserType.AI,f"This is the bot's response to: {cm.text}")
+            await websocket.send_json(response.json())
+
+        except WebSocketDisconnect:
+            break
+
+    await websocket.close()
+
 
 if __name__ == "__main__":
     import uvicorn
