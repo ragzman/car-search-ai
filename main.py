@@ -1,13 +1,20 @@
+from xml.dom import ValidationErr
 from fastapi import FastAPI, Request, WebSocket
+import logging
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from models.chat_message import ChatMessage
+from models.chat_user_type import ChatUserType
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="dist"), name="static")
 
 templates = Jinja2Templates(directory="templates")
+
+#TODO(Aditya): fix logging config location.
+logging.basicConfig(level=logging.INFO)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -22,18 +29,20 @@ async def websocket_endpoint(websocket: WebSocket):
     while True:
         try:
             # Receive message from frontend
-            message = await websocket.receive_json()
-            message_type = message.get("type")
-            message_text = message.get("text")
+            data = await websocket.receive_json()
+            # Validate and process the received message
+            try:
+                logging.info(data)
+                cm = ChatMessage(**data)
+            except ValidationErr as e:
+                await websocket.send_json({"error": str(e)})
+                continue
 
-            if message_type == "user":
-                # Process user input and generate bot response
-                # Replace this with your chatbot logic
-                bot_response = f"This is the bot's response to: {message_text}"
-
-                # Send bot response to frontend
-                response = {"type": "bot", "text": bot_response}
-                await websocket.send_json(response)
+            # Process user input and generate bot response
+            # Replace this with your chatbot logic
+            # Send bot response to frontend
+            response = ChatMessage(ChatUserType.AI,f"This is the bot's response to: {cm.text}")
+            await websocket.send_json(response.json())
 
         except WebSocketDisconnect:
             break
