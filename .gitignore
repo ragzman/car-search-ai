@@ -205,3 +205,6 @@ frontend//typings
 # System files
 frontend/.DS_Store
 frontend/Thumbs.db
+
+#python env
+car-ai-pip3/
