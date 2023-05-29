@@ -4,7 +4,10 @@ from typing import Any, Dict, List
 
 from langchain.callbacks.base import AsyncCallbackHandler
 
-from models.schemas import ChatResponse
+from models.schemas import ChatMessage
+from models.schemas import MessageType
+from models.schemas import MessageSender
+
 
 
 class StreamingLLMCallbackHandler(AsyncCallbackHandler):
@@ -14,5 +17,5 @@ class StreamingLLMCallbackHandler(AsyncCallbackHandler):
         self.websocket = websocket
 
     async def on_llm_new_token(self, token: str, **kwargs: Any) -> None:
-        resp = ChatResponse(sender="bot", message=token, type="stream")
+        resp = ChatMessage(sender=MessageSender.AI, message=token, type=MessageType.STREAM_MSG)
         await self.websocket.send_json(resp.toJson())

@@ -12,16 +12,16 @@ export interface ChatMessage {
 
 // Keep in sync with main.py
 export enum MessageType {
-  STREAM_START,
-  STREAM_END,
-  STREAM_MSG,
-  COMMAND,
-  CLIENT_QUESTION,
+  STREAM_START="STREAM_START",
+  STREAM_END="STREAM_END",
+  STREAM_MSG="STREAM_MSG",
+  COMMAND="COMMAND",
+  CLIENT_QUESTION="CLIENT_QUESTION",
 }
 
 export enum MessageSender {
-  HUMAN,
-  AI,
+  HUMAN='HUMAN',
+  AI='AI',
 }
 
 @Component({
@@ -59,20 +59,28 @@ export class ChatbotComponent implements AfterViewChecked {
 
     const msg = { message: this.userInput, sender: MessageSender.HUMAN, type: MessageType.CLIENT_QUESTION };
     this.chatHistory.push(msg)
-    console.log(`Message sent: ${msg}`)
+    // console.log(`Message sent: ${msg}`)
 
     const observer: Observer<any> = {
       next: (data: any) => {
-        console.log(`Message Received: ${data}`)
+        // console.log(`Message Received: ${data}`)
         const receivedMsg: ChatMessage = JSON.parse(data) as ChatMessage
-        console.log(`Message Received: ${receivedMsg}`)
+        // console.log(`Message Received: ${receivedMsg}`)
 
-        // TODO: validate the incoming message. 
-        // Handle received data from the backend
-        // and update the chat history
-        this.chatHistory.push(receivedMsg);
-        this.chatHistory.map(h => {
-        console.log(`Messages in chat history: sender: ${h.sender}, message: ${h.message}, type: ${h.type}.`)})
+        if (receivedMsg.type === MessageType.STREAM_MSG) {
+          const lastBotMessageIndex = this.chatHistory.length - 1
+          const lastMsg = this.chatHistory[lastBotMessageIndex]
+          if (lastMsg.sender == MessageSender.AI) {
+            this.chatHistory[lastBotMessageIndex].message += receivedMsg.message;
+          }else {
+            this.chatHistory.push(receivedMsg)
+    
+          }
+        } else {
+          console.log(receivedMsg) //TODO: remove this and do something else. 
+        }
+        // this.chatHistory.map(h => {
+        // console.log(`Messages in chat history: sender: ${h.sender}, message: ${h.message}, type: ${h.type}.`)})
       },
       error: (error: any) => console.error('WebSocket error:', error),
       complete: () => console.log('WebSocket connection completed.')

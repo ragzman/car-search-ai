@@ -7,10 +7,8 @@
   },
   "files": [
     "src/main.ts",
-    "src/app/chatbot/models.ts"
   ],
   "include": [
     "src/**/*.d.ts",
-    "src/app/chatbot/models.ts",
   ]
 }

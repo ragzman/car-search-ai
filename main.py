@@ -10,7 +10,10 @@ from langchain.chains import LLMChain
 from langchain.llms import OpenAI
 
 from callback import StreamingLLMCallbackHandler
-from models.schemas import ChatResponse
+from models.schemas import ChatMessage
+from models.schemas import MessageSender
+from models.schemas import MessageType
+
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -42,17 +45,18 @@ async def websocket_endpoint(websocket: WebSocket):
             # Validate and process the received message
             try:
                 logging.info(data)  # TODO: remove logging.
-                cm = ChatResponse(
+                cm = ChatMessage(
                     **data
                 )  # TODO(Aditya): rename this class from ChatResponse to something like ChatSchema.ß
             except ValidationErr as e:
                 await websocket.send_json({"error": str(e)})
                 continue
+            if(cm.type == MessageType.CLIENT_QUESTION):
+                botResponse = await chain.arun(cm.message)
+            else:
+                logging.info(f"The message received is {cm.toJson()}")
 
-            botResponse = await chain.arun(cm.message)
-            logging.info(f"The message received is {botResponse}")
-
-            end_resp = ChatResponse(sender="bot", message="", type="end")
+            end_resp = ChatMessage(sender=MessageSender.AI, message="", type=MessageType.STREAM_END)
             await websocket.send_json(end_resp.toJson())
         except WebSocketDisconnect:
             break
@@ -63,8 +67,8 @@ def createChain(websocket):
     stream_handler = StreamingLLMCallbackHandler(websocket)
     llm = OpenAI(temperature=0.9, streaming=True, callbacks=[stream_handler], verbose= True)
     prompt = PromptTemplate(
-        input_variables=["product"],
-        template="What is a good name for a company that makes {product}?",
+        input_variables=["question"],
+        template="Answer the user's question in a couple of lines. Question:  {question}?",
     )
     chain = LLMChain(llm=llm, prompt=prompt)
     return chain

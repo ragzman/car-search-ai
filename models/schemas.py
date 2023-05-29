@@ -1,26 +1,43 @@
 """Schemas for the chat app."""
 from pydantic import BaseModel, validator
 import json
+from enum import Enum
 
 
-class ChatResponse(BaseModel):
-    """Chat response schema."""
+class MessageType(Enum):
+    STREAM_START = "STREAM_START"
+    STREAM_END = "STREAM_END"
+    STREAM_MSG = "STREAM_MSG"
+    COMMAND = "COMMAND"
+    CLIENT_QUESTION = "CLIENT_QUESTION"
 
-    sender: str
+    def __str__(self):
+        return self.value
+
+
+class MessageSender(Enum):
+    HUMAN = "HUMAN"
+    AI = "AI"
+
+    def __str__(self):
+        return self.value
+
+
+class ChatMessage(BaseModel):
+    """Chat Message schema."""
+
+    sender: MessageSender
     message: str
-    type: str
+    type: MessageType
 
-    @validator("sender")
-    def sender_must_be_bot_or_you(cls, v):
-        if v not in ["bot", "you"]:
-            raise ValueError("sender must be bot or you")
-        return v
-
-    @validator("type")
-    def validate_message_type(cls, v):
-        if v not in ["start", "stream", "end", "error", "info"]:
-            raise ValueError("type must be start, stream or end")
-        return v
-    
     def toJson(self):
-        return json.dumps(self.dict())
+        return json.dumps(self.dict(), cls = EnumEncoder)
+    
+
+class EnumEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Enum):
+            return str(obj)
+        return super().default(obj)
+
+    
