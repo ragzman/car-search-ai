@@ -1,12 +1,12 @@
 <div>
   <div class="chat-history" #scrollableAreaRef>
-    <div *ngFor="let message of chatHistory; let index = index"
+    <div *ngFor="let msg of chatHistory; let index = index"
       [ngClass]="{'message-container': true, 'fade-in': index === chatHistory.length - 1}">
-      <ng-container *ngIf="message.userType === 'AI'; else userMessage">
+      <ng-container *ngIf="msg.sender === 'bot'; else userMessage">
         <div class="message">
-          <img src="assets/icons/bot.png" alt="AI" width="25" height="25" class="bot-icon" />
+          <img src="assets/icons/bot.png" alt="bot" width="25" height="25" class="bot-icon" />
           <div class="message-text">
-            {{ message.text}}
+            {{ msg.message}}
           </div>
         </div>
       </ng-container>
@@ -15,7 +15,7 @@
         <div class="message">
           <img src="assets/icons/usericon.png" alt="Human" width="25" height="25" class="user-icon" />
           <div class="message-text">
-            {{ message.text}}
+            {{ msg.message}}
           </div>
         </div>
       </ng-template>

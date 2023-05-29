@@ -4,10 +4,9 @@ import logging
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from models.chat_message import ChatMessage
-from models.chat_user_type import ChatUserType
 from dotenv import load_dotenv
 from langchain.llms import OpenAI
+from models.schemas import ChatResponse
 
 
 load_dotenv()  # Load environment variables from .env file
@@ -31,6 +30,7 @@ async def read_root(request: Request):
 async def websocket_endpoint(websocket: WebSocket):
     llm = OpenAI(temperature=0.9)
     await websocket.accept()
+    
 
     while True:
         try:
@@ -39,17 +39,14 @@ async def websocket_endpoint(websocket: WebSocket):
             # Validate and process the received message
             try:
                 logging.info(data)
-                cm = ChatMessage(**data)
+                cm = ChatResponse(**data)  #TODO(Aditya): rename this class from ChatResponse to something like ChatSchema.ß
             except ValidationErr as e:
                 await websocket.send_json({"error": str(e)})
                 continue
 
-            # Process user input and generate bot response
-            # Replace this with your chatbot logic
-            # Send bot response to frontend
-            botResponse = llm(cm.text)
-            # logging.info(botResponse)
-            response = ChatMessage(ChatUserType.AI,botResponse)
+            botResponse = llm(cm.message)
+            response = ChatResponse(sender= "bot", message = botResponse, type = "stream") # TODO Use other message types etc.
+            logging.info(response)
             await websocket.send_json(response.json())
 
         except WebSocketDisconnect:

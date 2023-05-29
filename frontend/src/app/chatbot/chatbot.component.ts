@@ -6,13 +6,9 @@ import { Observer } from 'rxjs';
 
 // TODO: move this to some model package. 
 export interface ChatMessage {
-  userType: UserType;
-  text: string;
-}
-
-export enum UserType {
-  AI = 'AI',
-  HUMAN = 'HUMAN'
+  sender: string;
+  message: string;
+  type: string;
 }
 
 
@@ -48,17 +44,22 @@ export class ChatbotComponent implements AfterViewChecked {
       }
     });
 
-    const message = { text: this.userInput, userType: UserType.HUMAN };
-    this.chatHistory.push(message)
-    console.log(message)
+    const msg = { message: this.userInput, sender: "you", type: "stream" };
+    this.chatHistory.push(msg)
+    console.log(`Message sent: ${msg}`)
 
     const observer: Observer<any> = {
       next: (data: any) => {
-        console.log(data)
+        // console.log(`Message Received: ${data}`)
+        const receivedMsg: ChatMessage = JSON.parse(data) as ChatMessage
+        // console.log(`Message Received: ${receivedMsg}`)
+        
         // TODO: validate the incoming message. 
         // Handle received data from the backend
         // and update the chat history
-        this.chatHistory.push(data);
+        this.chatHistory.push(receivedMsg);
+        // this.chatHistory.map(h => {
+          // console.log(`Messages in chat history: sender: ${h.sender}, message: ${h.message}, type: ${h.type}.`)})
       },
       error: (error: any) => console.error('WebSocket error:', error),
       complete: () => console.log('WebSocket connection completed.')
@@ -68,7 +69,7 @@ export class ChatbotComponent implements AfterViewChecked {
     socket.subscribe(observer);
 
     // Send the message to the backend
-    socket.next(message);
+    socket.next(msg);
 
     // Clear the user input field
     this.userInput = '';
