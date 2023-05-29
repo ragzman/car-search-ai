@@ -4,19 +4,32 @@ import { webSocket } from 'rxjs/webSocket';
 import { HttpHeaders } from '@angular/common/http';
 import { Observer } from 'rxjs';
 
-// TODO: move this to some model package. 
 export interface ChatMessage {
-  sender: string;
+  sender: MessageSender;
   message: string;
-  type: string;
+  type: MessageType;
 }
 
+// Keep in sync with main.py
+export enum MessageType {
+  STREAM_START,
+  STREAM_END,
+  STREAM_MSG,
+  COMMAND,
+  CLIENT_QUESTION,
+}
+
+export enum MessageSender {
+  HUMAN,
+  AI,
+}
 
 @Component({
   selector: 'ai-chatbot',
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.css']
 })
+
 export class ChatbotComponent implements AfterViewChecked {
 
 
@@ -44,22 +57,22 @@ export class ChatbotComponent implements AfterViewChecked {
       }
     });
 
-    const msg = { message: this.userInput, sender: "you", type: "stream" };
+    const msg = { message: this.userInput, sender: MessageSender.HUMAN, type: MessageType.CLIENT_QUESTION };
     this.chatHistory.push(msg)
     console.log(`Message sent: ${msg}`)
 
     const observer: Observer<any> = {
       next: (data: any) => {
-        // console.log(`Message Received: ${data}`)
+        console.log(`Message Received: ${data}`)
         const receivedMsg: ChatMessage = JSON.parse(data) as ChatMessage
-        // console.log(`Message Received: ${receivedMsg}`)
-        
+        console.log(`Message Received: ${receivedMsg}`)
+
         // TODO: validate the incoming message. 
         // Handle received data from the backend
         // and update the chat history
         this.chatHistory.push(receivedMsg);
-        // this.chatHistory.map(h => {
-          // console.log(`Messages in chat history: sender: ${h.sender}, message: ${h.message}, type: ${h.type}.`)})
+        this.chatHistory.map(h => {
+        console.log(`Messages in chat history: sender: ${h.sender}, message: ${h.message}, type: ${h.type}.`)})
       },
       error: (error: any) => console.error('WebSocket error:', error),
       complete: () => console.log('WebSocket connection completed.')

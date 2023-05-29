@@ -1,5 +1,6 @@
 """Schemas for the chat app."""
 from pydantic import BaseModel, validator
+import json
 
 
 class ChatResponse(BaseModel):
@@ -20,3 +21,6 @@ class ChatResponse(BaseModel):
         if v not in ["start", "stream", "end", "error", "info"]:
             raise ValueError("type must be start, stream or end")
         return v
+    
+    def toJson(self):
+        return json.dumps(self.dict())

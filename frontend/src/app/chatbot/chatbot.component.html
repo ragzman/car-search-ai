@@ -2,7 +2,7 @@
   <div class="chat-history" #scrollableAreaRef>
     <div *ngFor="let msg of chatHistory; let index = index"
       [ngClass]="{'message-container': true, 'fade-in': index === chatHistory.length - 1}">
-      <ng-container *ngIf="msg.sender === 'bot'; else userMessage">
+      <ng-container *ngIf="msg.sender === MessageSender.AI; else userMessage">
         <div class="message">
           <img src="assets/icons/bot.png" alt="bot" width="25" height="25" class="bot-icon" />
           <div class="message-text">
