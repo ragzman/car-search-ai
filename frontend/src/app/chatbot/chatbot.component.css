@@ -79,8 +79,8 @@
 .message-text {
   margin-left: 10px;
   word-wrap: break-word;
-  word-break: break-all;
-  max-width: 40ch;
+  word-break: break-word;
+  max-width: 60ch;
 }
 
 .message-container {
