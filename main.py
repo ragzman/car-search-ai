@@ -45,9 +45,7 @@ async def websocket_endpoint(websocket: WebSocket):
             # Validate and process the received message
             try:
                 logging.info(data)  # TODO: remove logging.
-                cm = ChatMessage(
-                    **data
-                )  # TODO(Aditya): rename this class from ChatResponse to something like ChatSchema.ß
+                cm = ChatMessage.fromJson(data) 
             except ValidationErr as e:
                 await websocket.send_json({"error": str(e)})
                 continue

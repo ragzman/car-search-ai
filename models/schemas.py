@@ -33,6 +33,11 @@ class ChatMessage(BaseModel):
     def toJson(self):
         return json.dumps(self.dict(), cls = EnumEncoder)
     
+    @classmethod
+    def fromJson(cls, json_str):
+        json_obj = json.loads(json_str)
+        return cls(**json_obj)
+    
 
 class EnumEncoder(json.JSONEncoder):
     def default(self, obj):

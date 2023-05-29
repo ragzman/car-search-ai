@@ -7,7 +7,7 @@ import { ChatMessage, MessageSender, MessageType } from './chatbot.component';
 @Injectable({
   providedIn: 'root'
 })
-export class WebsocketService {
+export class ChatService {
 
   private socketUrl = 'ws://localhost:8000/aichat'; // Replace with your WebSocket URL
   private socket: WebSocketSubject<any>;
@@ -42,6 +42,7 @@ export class WebsocketService {
       sender: MessageSender.HUMAN,
       type: MessageType.CLIENT_QUESTION
     };
+    console.log(`senidng msg: ${msg.message}, ${msg.type}`)
     this.socket.next(JSON.stringify(msg));
   }
 

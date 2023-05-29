@@ -4,6 +4,9 @@ import { webSocket } from 'rxjs/webSocket';
 import { HttpHeaders } from '@angular/common/http';
 import { Observer } from 'rxjs';
 
+import {ChatService} from './chat.service'
+
+
 export interface ChatMessage {
   sender: MessageSender;
   message: string;
@@ -12,16 +15,16 @@ export interface ChatMessage {
 
 // Keep in sync with main.py
 export enum MessageType {
-  STREAM_START="STREAM_START",
-  STREAM_END="STREAM_END",
-  STREAM_MSG="STREAM_MSG",
-  COMMAND="COMMAND",
-  CLIENT_QUESTION="CLIENT_QUESTION",
+  STREAM_START = "STREAM_START",
+  STREAM_END = "STREAM_END",
+  STREAM_MSG = "STREAM_MSG",
+  COMMAND = "COMMAND",
+  CLIENT_QUESTION = "CLIENT_QUESTION",
 }
 
 export enum MessageSender {
-  HUMAN='HUMAN',
-  AI='AI',
+  HUMAN = 'HUMAN',
+  AI = 'AI',
 }
 
 @Component({
@@ -31,34 +34,19 @@ export enum MessageSender {
 })
 
 export class ChatbotComponent implements AfterViewChecked {
-
-
   chatHistory: ChatMessage[] = [];
   userInput: string = '';
-  loading: boolean = false;
+  loading: boolean = false;  //TODO: start using this to disable the send button.
+
+  constructor(private chatService: ChatService) { }
 
   sendMessage() {
-    const socketUrl = 'ws://localhost:8000/aichat'; // Replace with your WebSocket URL
-
-    const headers = new HttpHeaders({
-      // Add any necessary headers for authentication or other purposes
-    });
-
-    const socket = webSocket({
-      url: socketUrl,
-      deserializer: (data: MessageEvent) => JSON.parse(data.data),
-      openObserver: {
-        next: () => console.log('WebSocket connection established.'),
-        error: (error: any) => console.error('WebSocket connection error:', error)
-      },
-      closeObserver: {
-        next: () => console.log('WebSocket connection closed.'),
-        error: (error: any) => console.error('WebSocket connection error:', error)
-      }
-    });
-
-    const msg = { message: this.userInput, sender: MessageSender.HUMAN, type: MessageType.CLIENT_QUESTION };
-    this.chatHistory.push(msg)
+    const msg: ChatMessage = {
+      message: this.userInput,
+      sender: MessageSender.HUMAN,
+      type: MessageType.CLIENT_QUESTION
+    };
+    this.chatHistory.push(msg);
     // console.log(`Message sent: ${msg}`)
 
     const observer: Observer<any> = {
@@ -72,9 +60,9 @@ export class ChatbotComponent implements AfterViewChecked {
           const lastMsg = this.chatHistory[lastBotMessageIndex]
           if (lastMsg.sender == MessageSender.AI) {
             this.chatHistory[lastBotMessageIndex].message += receivedMsg.message;
-          }else {
+          } else {
             this.chatHistory.push(receivedMsg)
-    
+
           }
         } else {
           console.log(receivedMsg) //TODO: remove this and do something else. 
@@ -87,10 +75,10 @@ export class ChatbotComponent implements AfterViewChecked {
     };
 
     // Subscribe to the socket using the observer
-    socket.subscribe(observer);
+    this.chatService.subscribe(observer)
 
     // Send the message to the backend
-    socket.next(msg);
+    this.chatService.sendMessage(msg.message)
 
     // Clear the user input field
     this.userInput = '';
