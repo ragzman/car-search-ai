@@ -2,7 +2,7 @@ import logging
 from xml.dom import ValidationErr
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request, WebSocket
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -45,32 +45,38 @@ async def websocket_endpoint(websocket: WebSocket):
             # Validate and process the received message
             try:
                 logging.info(data)  # TODO: remove logging.
-                cm = ChatMessage.fromJson(data) 
+                cm = ChatMessage.fromJson(data)
             except ValidationErr as e:
                 await websocket.send_json({"error": str(e)})
                 continue
-            if(cm.type == MessageType.CLIENT_QUESTION):
-                botResponse = await chain.arun(cm.message)
+            if cm.type == MessageType.CLIENT_QUESTION:
+                await chain.arun(cm.message)
             else:
+                #TODO: does the client need to send any other type of message?
                 logging.info(f"The message received is {cm.toJson()}")
 
-            end_resp = ChatMessage(sender=MessageSender.AI, message="", type=MessageType.STREAM_END)
+            end_resp = ChatMessage(
+                sender=MessageSender.AI, message="", type=MessageType.STREAM_END
+            )
             await websocket.send_json(end_resp.toJson())
         except WebSocketDisconnect:
             break
 
     await websocket.close()
 
+
 def createChain(websocket):
+    """Create the langhcain chain. """
     stream_handler = StreamingLLMCallbackHandler(websocket)
-    llm = OpenAI(temperature=0.9, streaming=True, callbacks=[stream_handler], verbose= True)
+    llm = OpenAI(
+        temperature=0.9, streaming=True, callbacks=[stream_handler], verbose=True
+    )
     prompt = PromptTemplate(
         input_variables=["question"],
         template="Answer the user's question in a couple of lines. Question:  {question}?",
     )
     chain = LLMChain(llm=llm, prompt=prompt)
     return chain
-
 
 
 if __name__ == "__main__":

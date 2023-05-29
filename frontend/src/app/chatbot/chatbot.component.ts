@@ -2,9 +2,9 @@ import { Component, ElementRef, ViewChild, AfterViewChecked } from '@angular/cor
 
 import { webSocket } from 'rxjs/webSocket';
 import { HttpHeaders } from '@angular/common/http';
-import { Observer } from 'rxjs';
+import { Observer, Subscription } from 'rxjs';
 
-import {ChatService} from './chat.service'
+import { ChatService } from './chat.service'
 
 
 export interface ChatMessage {
@@ -36,7 +36,8 @@ export enum MessageSender {
 export class ChatbotComponent implements AfterViewChecked {
   chatHistory: ChatMessage[] = [];
   userInput: string = '';
-  loading: boolean = false;  //TODO: start using this to disable the send button.
+  loading: boolean = false;  
+  private subscription: Subscription | undefined;
 
   constructor(private chatService: ChatService) { }
 
@@ -56,30 +57,38 @@ export class ChatbotComponent implements AfterViewChecked {
         // console.log(`Message Received: ${receivedMsg}`)
 
         if (receivedMsg.type === MessageType.STREAM_MSG) {
+          console.log(receivedMsg)
           const lastBotMessageIndex = this.chatHistory.length - 1
           const lastMsg = this.chatHistory[lastBotMessageIndex]
           if (lastMsg.sender == MessageSender.AI) {
             this.chatHistory[lastBotMessageIndex].message += receivedMsg.message;
           } else {
             this.chatHistory.push(receivedMsg)
-
           }
-        } else {
+        } else if (receivedMsg.type == MessageType.STREAM_END) {
+          this.loading = false
           console.log(receivedMsg) //TODO: remove this and do something else. 
         }
         // this.chatHistory.map(h => {
         // console.log(`Messages in chat history: sender: ${h.sender}, message: ${h.message}, type: ${h.type}.`)})
       },
-      error: (error: any) => console.error('WebSocket error:', error),
-      complete: () => console.log('WebSocket connection completed.')
+      error: (error: any) => {
+        console.error('WebSocket error:', error);
+        this.loading = false
+      },
+      complete: () => {
+        console.log('WebSocket connection completed.');
+        this.loading = false;
+      }
     };
 
     // Subscribe to the socket using the observer
-    this.chatService.subscribe(observer)
-
+    if(!this.subscription){
+      this.subscription = this.chatService.subscribe(observer)
+    }
+    this.loading = true;
     // Send the message to the backend
     this.chatService.sendMessage(msg.message)
-
     // Clear the user input field
     this.userInput = '';
   }

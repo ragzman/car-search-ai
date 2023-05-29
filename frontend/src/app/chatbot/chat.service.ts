@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
 import { HttpHeaders } from '@angular/common/http';
-import { Observer } from 'rxjs';
+import { Observer, Subscription } from 'rxjs';
 import { ChatMessage, MessageSender, MessageType } from './chatbot.component';
 
 @Injectable({
@@ -42,11 +42,11 @@ export class ChatService {
       sender: MessageSender.HUMAN,
       type: MessageType.CLIENT_QUESTION
     };
-    console.log(`senidng msg: ${msg.message}, ${msg.type}`)
+    console.log(`sending msg: ${msg.message}, ${msg.type}`)
     this.socket.next(JSON.stringify(msg));
   }
 
-  public subscribe(observer: Observer<any>) {
-    this.socket.subscribe(observer);
+  public subscribe(observer: Observer<any>): Subscription {
+    return this.socket.subscribe(observer);
   }
 }
