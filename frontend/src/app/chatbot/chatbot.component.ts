@@ -1,73 +1,109 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
+
 import { webSocket } from 'rxjs/webSocket';
 import { HttpHeaders } from '@angular/common/http';
-import { Observer } from 'rxjs';
+import { Observer, Subscription } from 'rxjs';
 
-// TODO: move this to some model package. 
+import { ChatService } from './chat.service'
+
+
 export interface ChatMessage {
-  userType: UserType;
-  text: string;
+  sender: MessageSender;
+  message: string;
+  type: MessageType;
 }
 
-export enum UserType {
+// Keep in sync with main.py
+export enum MessageType {
+  STREAM_START = "STREAM_START",
+  STREAM_END = "STREAM_END",
+  STREAM_MSG = "STREAM_MSG",
+  COMMAND = "COMMAND",
+  CLIENT_QUESTION = "CLIENT_QUESTION",
+}
+
+export enum MessageSender {
+  HUMAN = 'HUMAN',
   AI = 'AI',
-  HUMAN = 'HUMAN'
 }
-
 
 @Component({
   selector: 'ai-chatbot',
   templateUrl: './chatbot.component.html',
   styleUrls: ['./chatbot.component.css']
 })
-export class ChatbotComponent {
+
+export class ChatbotComponent implements AfterViewChecked {
   chatHistory: ChatMessage[] = [];
   userInput: string = '';
+  loading: boolean = false;  
+  private subscription: Subscription | undefined;
+
+  constructor(private chatService: ChatService) { }
 
   sendMessage() {
-    const socketUrl = 'ws://localhost:8000/chat'; // Replace with your WebSocket URL
-
-    const headers = new HttpHeaders({
-      // Add any necessary headers for authentication or other purposes
-    });
-
-    const socket = webSocket({
-      url: socketUrl,
-      deserializer: (data: MessageEvent) => JSON.parse(data.data),
-      openObserver: {
-        next: () => console.log('WebSocket connection established.'),
-        error: (error: any) => console.error('WebSocket connection error:', error)
-      },
-      closeObserver: {
-        next: () => console.log('WebSocket connection closed.'),
-        error: (error: any) => console.error('WebSocket connection error:', error)
-      }
-    });
-
-    const message = { text: this.userInput, userType: UserType.HUMAN };
-    this.chatHistory.push(message)
-    console.log(message)
+    const msg: ChatMessage = {
+      message: this.userInput,
+      sender: MessageSender.HUMAN,
+      type: MessageType.CLIENT_QUESTION
+    };
+    this.chatHistory.push(msg);
+    // console.log(`Message sent: ${msg}`)
 
     const observer: Observer<any> = {
       next: (data: any) => {
-        console.log(data)
-        // TODO: validate the incoming message. 
-        // Handle received data from the backend
-        // and update the chat history
-        this.chatHistory.push(data);
+        // console.log(`Message Received: ${data}`)
+        const receivedMsg: ChatMessage = JSON.parse(data) as ChatMessage
+        // console.log(`Message Received: ${receivedMsg}`)
+
+        if (receivedMsg.type === MessageType.STREAM_MSG) {
+          console.log(receivedMsg)
+          const lastBotMessageIndex = this.chatHistory.length - 1
+          const lastMsg = this.chatHistory[lastBotMessageIndex]
+          if (lastMsg.sender == MessageSender.AI) {
+            this.chatHistory[lastBotMessageIndex].message += receivedMsg.message;
+          } else {
+            this.chatHistory.push(receivedMsg)
+          }
+        } else if (receivedMsg.type == MessageType.STREAM_END) {
+          this.loading = false
+          console.log(receivedMsg) //TODO: remove this and do something else. 
+        }
+        // this.chatHistory.map(h => {
+        // console.log(`Messages in chat history: sender: ${h.sender}, message: ${h.message}, type: ${h.type}.`)})
       },
-      error: (error: any) => console.error('WebSocket error:', error),
-      complete: () => console.log('WebSocket connection completed.')
+      error: (error: any) => {
+        console.error('WebSocket error:', error);
+        this.loading = false
+      },
+      complete: () => {
+        console.log('WebSocket connection completed.');
+        this.loading = false;
+      }
     };
 
     // Subscribe to the socket using the observer
-    socket.subscribe(observer);
-
+    if(!this.subscription){
+      this.subscription = this.chatService.subscribe(observer)
+    }
+    this.loading = true;
     // Send the message to the backend
-    socket.next(message);
-
+    this.chatService.sendMessage(msg.message)
     // Clear the user input field
     this.userInput = '';
+  }
+
+
+  @ViewChild('scrollableAreaRef', { static: false }) scrollableAreaRef!: ElementRef;
+
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
+  }
+
+  scrollToBottom() {
+    try {
+      this.scrollableAreaRef.nativeElement.scrollTop = this.scrollableAreaRef.nativeElement.scrollHeight;
+    } catch (err) { }
   }
 
 
