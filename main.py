@@ -59,6 +59,7 @@ async def read_root(request: Request):
 # WebSocket endpoint
 @app.websocket("/aichat")
 async def websocket_endpoint(websocket: WebSocket):
+    logging.info(f'**********Received a message -- Addy')
     await sio.app.handle_request(websocket.scope, websocket.receive, websocket.send)
     # await websocket.accept()
     # chain: LLMChain = createChain(websocket=websocket)

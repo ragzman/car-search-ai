@@ -20,6 +20,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
 
     ngOnInit() {
         this.socketSubscription = this.socketioService.getMessages().subscribe((receivedMsg: ChatMessage) => {
+            console.log(`Message Received: ${receivedMsg.message}`)
             if (receivedMsg.type === MessageType.STREAM_MSG) {
                 console.log(receivedMsg)
                 const lastBotMessageIndex = this.chatHistory.length - 1
@@ -49,7 +50,8 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
             type: MessageType.CLIENT_QUESTION
         };
         this.chatHistory.push(msg);
-        this.loading = true;
+        // this.loading = true;
+        console.log(`component sends a message. ${this.userInput}`)
 
         this.socketioService.sendMessage(this.userInput);
 

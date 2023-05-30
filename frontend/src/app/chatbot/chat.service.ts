@@ -80,12 +80,14 @@ export class ChatService {
       sender: MessageSender.HUMAN,
       type: MessageType.CLIENT_QUESTION
     };
+    console.log(`Sending message: ${msg}`)
     this.socket.emit('message', msg);
   }
 
   public getMessages(): Observable<ChatMessage> {
     return new Observable<ChatMessage>((observer) => {
       this.socket.on('message', (data: ChatMessage) => {
+        console.log(`got  message; ${data}`)
         observer.next(data);
       });
 
