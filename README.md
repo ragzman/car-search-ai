@@ -1,10 +1,10 @@
 # car-search-ai
 
-This repository contains the code for a car search AI application.
+This repository contains code for a car search AI application.
 
 ## Installation
 
-To set up the application, follow these steps:
+To get started, follow the instructions below:
 
 1. Clone the repository:
 
@@ -12,42 +12,52 @@ To set up the application, follow these steps:
    git clone https://github.com/ragzman/car-search-ai.git
    ```
 
-2. Change into the project directory:
+2. Navigate to the project directory:
 
    ```bash
    cd car-search-ai
    ```
 
-3. Install the required Python packages:
+3. Install the Python dependencies:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-## Usage
-
-To run the application, execute the following commands:
-
-1. Start the backend server:
+4. Start the backend server:
 
    ```bash
    uvicorn main:app --reload
    ```
 
-   This will start the backend server using [Uvicorn](https://www.uvicorn.org/) with live reloading enabled.
-
-2. Open a new terminal or command prompt and change into the frontend directory:
+5. Open a new terminal and navigate to the frontend directory:
 
    ```bash
    cd frontend
    ```
 
-3. Start the frontend development server:
+6. Install the required npm packages:
+
+   ```bash
+   npm install
+   ```
+
+7. Start the frontend development server:
 
    ```bash
    ng serve
    ```
 
-   This will start the frontend development server using [Angular](https://angular.io/) and serve the application.
+## Usage
 
-4. Open your web browser and navigate to [http://localhost:4200](http://localhost:4200) to access the application.
+Once the installation is complete, you can access the car search AI application by opening your web browser and navigating to [http://localhost:4200](http://localhost:4200).
+
+## Contributing
+
+If you would like to contribute to this project, please follow these steps:
+
+1. Fork the repository on GitHub.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them with descriptive commit messages.
+4. Push your changes to your forked repository.
+5. Submit a pull request to the main repository.
