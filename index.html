@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Echo Server</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+  <script>
+    const socket = io();
+    socket.on('connect', () => {
+      console.log('Connected to server');
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from server');
+    });
+
+    socket.on('echo', (message) => {
+      console.log('Received message:', message);
+    });
+
+    function sendEcho() {
+      const message = document.getElementById('message').value;
+      socket.emit('echo', message);
+    }
+  </script>
+</head>
+<body>
+  <input type="text" id="message" placeholder="Enter message" />
+  <button onclick="sendEcho()">Send Echo</button>
+</body>
+</html>
