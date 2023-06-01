@@ -1,63 +1,84 @@
-# car-search-ai
+# Car Search AI
 
-This repository contains code for a car search AI application.
+This repository contains the source code for the Car Search AI project. It provides a web application for searching car information using artificial intelligence.
 
 ## Installation
 
-To get started, follow the instructions below:
+Follow the instructions below to set up the project on your local machine.
 
-1. Clone the repository:
+### Prerequisites
 
-   ```bash
-   git clone https://github.com/ragzman/car-search-ai.git
-   ```
+- Git
+- Python 3.x
+- Node.js
+- Angular CLI
 
-2. Navigate to the project directory:
+### Clone the repository
 
-   ```bash
-   cd car-search-ai
-   ```
+```bash
+git clone https://github.com/ragzman/car-search-ai.git
+```
 
-3. Install the Python dependencies:
+### Navigate to the project directory
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+cd car-search-ai
+```
 
-4. Start the backend server:
+### Install Python dependencies
 
-   ```bash
-   uvicorn main:app --reload
-   ```
+```bash
+pip install -r requirements.txt
+# or
+pip3 install -r requirements.txt
+```
 
-5. Open a new terminal and navigate to the frontend directory:
+### Deactivate conda environment (if enabled)
 
-   ```bash
-   cd frontend
-   ```
+```bash
+conda deactivate
+```
 
-6. Install the required npm packages:
+### Install Node.js dependencies
 
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-7. Start the frontend development server:
+### Install Gulp globally
 
-   ```bash
-   ng serve
-   ```
+```bash
+npm install -g gulp
+```
 
-## Usage
+### Run Gulp
 
-Once the installation is complete, you can access the car search AI application by opening your web browser and navigating to [http://localhost:4200](http://localhost:4200).
+```bash
+gulp
+```
 
-## Contributing
+### Start the backend server
 
-If you would like to contribute to this project, please follow these steps:
+```bash
+uvicorn main:app --reload
+```
 
-1. Fork the repository on GitHub.
-2. Create a new branch for your feature or bug fix.
-3. Make your changes and commit them with descriptive commit messages.
-4. Push your changes to your forked repository.
-5. Submit a pull request to the main repository.
+### Navigate to the frontend directory
+
+```bash
+cd frontend
+```
+
+### Install Angular dependencies
+
+```bash
+npm install
+```
+
+### Start the frontend development server
+
+```bash
+ng serve
+```
+
+You should now be able to access the Car Search AI web application by visiting [http://localhost:4200](http://localhost:4200) in your web browser.
