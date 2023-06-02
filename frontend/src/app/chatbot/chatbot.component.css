@@ -105,6 +105,11 @@
   cursor: pointer;
 }
 
+.generate-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
 .generate-button:hover {
   background-color: #45a049;
   /* Choose a suitable hover background color */

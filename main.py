@@ -13,11 +13,21 @@ from callback import StreamingLLMCallbackHandler
 from models.schemas import ChatMessage
 from models.schemas import MessageSender
 from models.schemas import MessageType
+from fastapi.middleware.cors import CORSMiddleware
+import socketio
 
 
 load_dotenv()  # Load environment variables from .env file
 
 app = FastAPI()
+
+# #TODO: Check if cors is needed after angular is added to static.
+origins = ["http://localhost:4200"]
+
+sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=origins)
+socketio_app = socketio.ASGIApp(sio, app)
+app.mount("/", socketio_app)
+
 
 app.mount("/static", StaticFiles(directory="dist"), name="static")
 
@@ -30,44 +40,49 @@ from langchain.prompts import PromptTemplate
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
+    # logging.info("*********In ReadRoot:")
     return templates.TemplateResponse("index.html", {"request": request})
 
 
+@sio.event
+def connect(sid, environ):
+    # logging.info("**********Connected.")
+    print("connect ", sid)
+
+
+@sio.event
+async def message(sid, data):
+    print("message ", data)
+    # logging.info(f"********* message received: {data} ")
+    await sio.emit("message", data, room=sid)
+
+
+@sio.event
+def disconnect(sid):
+    logging.info(f"**********Disconnected. {sid}")
+
+
 # WebSocket endpoint
-@app.websocket("/aichat")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    chain: LLMChain = createChain(websocket=websocket)
-    while True:
-        try:
-            # Receive message from frontend
-            data = await websocket.receive_json()
-            # Validate and process the received message
-            try:
-                logging.info(data)  # TODO: remove logging.
-                cm = ChatMessage.fromJson(data)
-            except ValidationErr as e:
-                await websocket.send_json({"error": str(e)})
-                continue
-            if cm.type == MessageType.CLIENT_QUESTION:
-                await chain.arun(cm.message)
-            else:
-                #TODO: does the client need to send any other type of message?
-                logging.info(f"The message received is {cm.toJson()}")
-
-            end_resp = ChatMessage(
-                sender=MessageSender.AI, message="", type=MessageType.STREAM_END
-            )
-            await websocket.send_json(end_resp.toJson())
-        except WebSocketDisconnect:
-            break
-
-    await websocket.close()
+@sio.on("chat")
+async def chat(sid, data):
+    # logging.info(f"**********Received a message in chat {data}")
+    try:
+        cm = ChatMessage(**data)
+    except ValidationErr as e:
+        logging.error(e)
+    chain: LLMChain = createChain(sid, sio)
+    await chain.arun(cm.message)
+    # logging.info("Chain complete. ")
+    end_resp = ChatMessage(
+        sender=MessageSender.AI, message="", type=MessageType.STREAM_END
+    )
+    await sio.emit("chat", end_resp.toJson(), room=sid)
+    # logging.info("Done. ")
 
 
-def createChain(websocket):
-    """Create the langhcain chain. """
-    stream_handler = StreamingLLMCallbackHandler(websocket)
+def createChain(sid, sio):
+    """Create the langhcain chain."""
+    stream_handler = StreamingLLMCallbackHandler(sid, sio)
     llm = OpenAI(
         temperature=0.9, streaming=True, callbacks=[stream_handler], verbose=True
     )
