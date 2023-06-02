@@ -14,9 +14,11 @@ export class PostsComponent implements OnInit {
   constructor(private route: ActivatedRoute) { } // Modify this, to add the ActivatedRoute
 
   ngOnInit(): void {
-    let articleName = this.route.snapshot.paramMap.get('article'); // add this
-    this.href = window.location.href; // add this
-    this.post = './assets/posts/' + articleName + '.md'; // add this
+    this.route.paramMap.subscribe(params => {
+      let articleName = params.get('article');
+      const path = `./assets/posts/${articleName}.md`;
+      this.post = path;
+    });
   }
 
 }
