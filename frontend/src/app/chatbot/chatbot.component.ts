@@ -36,7 +36,8 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
                 //TODO: do something else too? 
             }
             else if (receivedMsg.type == MessageType.COMMAND){
-                console.log(`emiting event: ${receivedMsg}`)
+                //TODO: change format of this command message. 
+                // console.log(`emiting event: ${receivedMsg}`)
                 this.eventService.emitEvent(receivedMsg.message)
             }
         });

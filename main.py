@@ -77,6 +77,7 @@ async def chat(sid, data):
         sender=MessageSender.AI, message="", type=MessageType.STREAM_END
     )
     await sio.emit("chat", end_resp.toJson(), room=sid)
+    #TODO: change format of this command message. 
     command_msg = ChatMessage(
         sender=MessageSender.AI, message="home", type=MessageType.COMMAND
     )
