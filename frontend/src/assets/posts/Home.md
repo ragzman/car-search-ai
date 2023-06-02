@@ -17,5 +17,3 @@ At Chatables.ai, our primary goal is to simplify and enhance the way your custom
 We believe in the power of AI chatbots to enhance user journeys and streamline interactions. By leveraging our expertise, you can transform your website into a user-friendly and engaging platform that exceeds customer expectations.
 
 Join us on this journey as we harness the potential of AI and redefine the way businesses connect with their customers. Let our chatbot be your trusted companion in discovering the endless possibilities that lie ahead.
-
-*Note: The above content is a suggested representation and can be further customized to reflect your brand's voice and specific offerings.*
