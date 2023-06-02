@@ -60,7 +60,7 @@ export class ChatService {
   private socket: Socket;
 
   constructor() {
-    this.socket = io('http://localhost:8000/aichat'); // Replace with your Socket.IO server URL
+    this.socket = io('ws://localhost:8000/'); // Replace with your Socket.IO server URL
     this.initSocketListeners();
   }
 
@@ -80,7 +80,8 @@ export class ChatService {
       sender: MessageSender.HUMAN,
       type: MessageType.CLIENT_QUESTION
     };
-    console.log(`Sending message: ${msg}`)
+    console.log(`Sending message: ${msg.message}`)
+    console.log(`IsActive ${this.socket.active}: , IsConnected: ${this.socket.connected}, ${this.socket}`)
     this.socket.emit('message', msg);
   }
 

@@ -15,7 +15,6 @@ from models.schemas import MessageSender
 from models.schemas import MessageType
 from fastapi.middleware.cors import CORSMiddleware
 import socketio
-from socketio import AsyncNamespace
 
 
 load_dotenv()  # Load environment variables from .env file
@@ -23,24 +22,24 @@ load_dotenv()  # Load environment variables from .env file
 app = FastAPI()
 
 # #TODO: Check if cors is needed after angular is added to static.
-origins = ["http://localhost", "http://localhost:4200"]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+origins = ["http://localhost:4200"]
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=origins)
+# app = web.Application()
+# sio.attach(app)
+
+# sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=origins)
 
 socketio_app = socketio.ASGIApp(sio, app)
-# app.mount("/socket.io", socketio.ASGIApp(sio))
+app.mount("/", socketio_app)
 
-@sio.event
-async def connect(sid, environ):
-    print("Client connected:", sid)
-    await sio.emit("message", "Welcome to the chat!", room=sid)
 
 app.mount("/static", StaticFiles(directory="dist"), name="static")
 
@@ -53,7 +52,24 @@ from langchain.prompts import PromptTemplate
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
+    logging.info("*********In ReadRoot:")
     return templates.TemplateResponse("index.html", {"request": request})
+
+
+@sio.event
+def connect(sid, environ):
+    logging.info("**********Connected.")
+    print("connect ", sid)
+
+@sio.event
+async def message(sid, data):
+    print("message ", data)
+    logging.info(f"********* message received: {data} ")
+
+@sio.event
+def disconnect(sid):
+    print('disconnect ', sid)
+    logging.info("**********Disconnected.")
 
 
 # WebSocket endpoint
@@ -110,44 +126,46 @@ if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
 
 
-class AIChatNamespace(AsyncNamespace):
-    async def on_connect(self, sid, environ):
-        print("Client connected:", sid)
-        await self.emit("message", "Welcome to the chat!", room=sid)
+# class AIChatNamespace(AsyncNamespace):
+#     async def on_connect(self, sid, environ):
+#         logging.info(sid)
+#         logging.info("*********Client connected in AINamespace:", sid)
 
-    async def on_message(self, sid, data):
-        # Validate and process the received message
-        try:
-            logging.info(data)  # TODO: remove logging.
-            cm = ChatMessage.fromJson(data)
-        except ValidationErr as e:
-            await self.emit("error", str(e), room=sid)
-            return
-        if cm.type == MessageType.CLIENT_QUESTION:
-            chain = createChain()
-            await chain.arun(cm.message)
-        else:
-            # TODO: does the client need to send any other type of message?
-            logging.info(f"The message received is {cm.toJson()}")
+#         await self.emit("message", "Welcome to the chat!", room=sid)
 
-        end_resp = ChatMessage(
-            sender=MessageSender.AI, message="", type=MessageType.STREAM_END
-        )
-        await self.emit("message", end_resp.toJson(), room=sid)
+#     async def on_message(self, sid, data):
+#         # Validate and process the received message
+#         try:
+#             logging.info(data)  # TODO: remove logging.
+#             cm = ChatMessage.fromJson(data)
+#         except ValidationErr as e:
+#             await self.emit("error", str(e), room=sid)
+#             return
+#         if cm.type == MessageType.CLIENT_QUESTION:
+#             chain = createChain()
+#             await chain.arun(cm.message)
+#         else:
+#             # TODO: does the client need to send any other type of message?
+#             logging.info(f"The message received is {cm.toJson()}")
 
-    async def on_disconnect(self, sid):
-        print("Client disconnected:", sid)
+#         end_resp = ChatMessage(
+#             sender=MessageSender.AI, message="", type=MessageType.STREAM_END
+#         )
+#         await self.emit("message", end_resp.toJson(), room=sid)
 
-    def createChain(self):
-        """Create the langhcain chain. """
-        stream_handler = StreamingLLMCallbackHandler(self)
-        llm = OpenAI(
-            temperature=0.9, streaming=True, callbacks=[stream_handler], verbose=True
-        )
-        prompt = PromptTemplate(
-            input_variables=["question"],
-            template="Answer the user's question in a couple of lines. Question:  {question}?",
-        )
-        chain = LLMChain(llm=llm, prompt=prompt)
-        return chain
+#     async def on_disconnect(self, sid):
+#         print("Client disconnected:", sid)
+
+#     def createChain(self):
+#         """Create the langhcain chain. """
+#         stream_handler = StreamingLLMCallbackHandler(self)
+#         llm = OpenAI(
+#             temperature=0.9, streaming=True, callbacks=[stream_handler], verbose=True
+#         )
+#         prompt = PromptTemplate(
+#             input_variables=["question"],
+#             template="Answer the user's question in a couple of lines. Question:  {question}?",
+#         )
+#         chain = LLMChain(llm=llm, prompt=prompt)
+#         return chain
 
