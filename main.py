@@ -77,6 +77,10 @@ async def chat(sid, data):
         sender=MessageSender.AI, message="", type=MessageType.STREAM_END
     )
     await sio.emit("chat", end_resp.toJson(), room=sid)
+    command_msg = ChatMessage(
+        sender=MessageSender.AI, message="home", type=MessageType.COMMAND
+    )
+    await sio.emit("chat", command_msg.toJson(), room=sid)
     # logging.info("Done. ")
 
 
