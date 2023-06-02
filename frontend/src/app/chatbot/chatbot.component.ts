@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit, OnDestroy } from '@angular/core';
 import { Observer, Subscription } from 'rxjs';
-import { ChatService } from './chat.service';
+import { ChatService } from './chatbot.service';
 
 
 @Component({
@@ -16,13 +16,13 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     @ViewChild('scrollableAreaRef', { static: false }) scrollableAreaRef!: ElementRef;
 
 
-    constructor(private socketioService: ChatService) { }
+    constructor(private chatService: ChatService) { }
 
     ngOnInit() {
-        this.socketSubscription = this.socketioService.getMessages().subscribe((receivedMsg: ChatMessage) => {
-            console.log(`Message Received: ${receivedMsg.message}`)
+        this.socketSubscription = this.chatService.getMessages().subscribe((receivedMsg: ChatMessage) => {
+            // console.log(`Message Received in component.ts: ${receivedMsg}`)
+            // console.log(`receviedMsg.type: ${receivedMsg.type}`)
             if (receivedMsg.type === MessageType.STREAM_MSG) {
-                console.log(receivedMsg)
                 const lastBotMessageIndex = this.chatHistory.length - 1
                 const lastMsg = this.chatHistory[lastBotMessageIndex]
                 if (lastMsg.sender == MessageSender.AI) {
@@ -32,7 +32,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
                 }
             } else if (receivedMsg.type == MessageType.STREAM_END) {
                 this.loading = false
-                console.log(receivedMsg) //TODO: remove this and do something else. 
+                //TODO: do something else too? 
             }
         });
     }
@@ -50,10 +50,9 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
             type: MessageType.CLIENT_QUESTION
         };
         this.chatHistory.push(msg);
-        // this.loading = true;
-        console.log(`component sends a message. ${this.userInput}`)
+        this.loading = true;
 
-        this.socketioService.sendMessage(this.userInput);
+        this.chatService.sendMessage(this.userInput);
 
         this.userInput = '';
     }

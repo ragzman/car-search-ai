@@ -65,6 +65,7 @@ def connect(sid, environ):
 async def message(sid, data):
     print("message ", data)
     logging.info(f"********* message received: {data} ")
+    await sio.emit("message", data, room=sid)
 
 @sio.event
 def disconnect(sid):
@@ -73,42 +74,28 @@ def disconnect(sid):
 
 
 # WebSocket endpoint
-@app.websocket("/aichat")
-async def websocket_endpoint(websocket: WebSocket):
-    logging.info(f'**********Received a message -- Addy')
-    await sio.app.handle_request(websocket.scope, websocket.receive, websocket.send)
-    # await websocket.accept()
-    # chain: LLMChain = createChain(websocket=websocket)
-    # while True:
-    #     try:
-    #         # Receive message from frontend
-    #         data = await websocket.receive_json()
-    #         # Validate and process the received message
-    #         try:
-    #             logging.info(data)  # TODO: remove logging.
-    #             cm = ChatMessage.fromJson(data)
-    #         except ValidationErr as e:
-    #             await websocket.send_json({"error": str(e)})
-    #             continue
-    #         if cm.type == MessageType.CLIENT_QUESTION:
-    #             await chain.arun(cm.message)
-    #         else:
-    #             #TODO: does the client need to send any other type of message?
-    #             logging.info(f"The message received is {cm.toJson()}")
-
-    #         end_resp = ChatMessage(
-    #             sender=MessageSender.AI, message="", type=MessageType.STREAM_END
-    #         )
-    #         await websocket.send_json(end_resp.toJson())
-    #     except WebSocketDisconnect:
-    #         break
-
-    # await websocket.close()
+@sio.on('chat')
+async def chat(sid, data):
+    logging.info(f'**********Received a message in chat {data}')
+    try:
+        logging.info(data)  # TODO: remove logging.
+        cm = ChatMessage(**data)
+    except ValidationErr as e:
+        logging.error(e)
+    chain: LLMChain = createChain(sid, sio)
+    await chain.arun(cm.message)
+    logging.info('Chain complete. ')
+    end_resp = ChatMessage(
+        sender=MessageSender.AI, message="", type=MessageType.STREAM_END
+    )
+    await sio.emit('chat', end_resp.toJson(), room=sid)
+    logging.info('Done. ')
 
 
-def createChain(websocket):
+
+def createChain(sid, sio):
     """Create the langhcain chain. """
-    stream_handler = StreamingLLMCallbackHandler(websocket)
+    stream_handler = StreamingLLMCallbackHandler(sid, sio)
     llm = OpenAI(
         temperature=0.9, streaming=True, callbacks=[stream_handler], verbose=True
     )
@@ -124,48 +111,4 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-
-# class AIChatNamespace(AsyncNamespace):
-#     async def on_connect(self, sid, environ):
-#         logging.info(sid)
-#         logging.info("*********Client connected in AINamespace:", sid)
-
-#         await self.emit("message", "Welcome to the chat!", room=sid)
-
-#     async def on_message(self, sid, data):
-#         # Validate and process the received message
-#         try:
-#             logging.info(data)  # TODO: remove logging.
-#             cm = ChatMessage.fromJson(data)
-#         except ValidationErr as e:
-#             await self.emit("error", str(e), room=sid)
-#             return
-#         if cm.type == MessageType.CLIENT_QUESTION:
-#             chain = createChain()
-#             await chain.arun(cm.message)
-#         else:
-#             # TODO: does the client need to send any other type of message?
-#             logging.info(f"The message received is {cm.toJson()}")
-
-#         end_resp = ChatMessage(
-#             sender=MessageSender.AI, message="", type=MessageType.STREAM_END
-#         )
-#         await self.emit("message", end_resp.toJson(), room=sid)
-
-#     async def on_disconnect(self, sid):
-#         print("Client disconnected:", sid)
-
-#     def createChain(self):
-#         """Create the langhcain chain. """
-#         stream_handler = StreamingLLMCallbackHandler(self)
-#         llm = OpenAI(
-#             temperature=0.9, streaming=True, callbacks=[stream_handler], verbose=True
-#         )
-#         prompt = PromptTemplate(
-#             input_variables=["question"],
-#             template="Answer the user's question in a couple of lines. Question:  {question}?",
-#         )
-#         chain = LLMChain(llm=llm, prompt=prompt)
-#         return chain
 

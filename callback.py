@@ -13,9 +13,10 @@ from models.schemas import MessageSender
 class StreamingLLMCallbackHandler(AsyncCallbackHandler):
     """Callback handler for streaming LLM responses."""
 
-    def __init__(self, websocket):
-        self.websocket = websocket
+    def __init__(self, sid, sio):
+        self.sid = sid
+        self.sio = sio
 
     async def on_llm_new_token(self, token: str, **kwargs: Any) -> None:
         resp = ChatMessage(sender=MessageSender.AI, message=token, type=MessageType.STREAM_MSG)
-        await self.websocket.send_json(resp.toJson())
+        await self.sio.emit('chat', resp.toJson(), room = self.sid)
