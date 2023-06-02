@@ -5,7 +5,7 @@ import { PostsComponent } from './home/posts/posts.component';
 
 const routes: Routes = [
   { path: 'chatbot', component: ChatbotComponent },
-  { path: 'posts/post/:article', component: PostsComponent },
+  { path: ':article', component: PostsComponent },
 ];
 
 @NgModule({
