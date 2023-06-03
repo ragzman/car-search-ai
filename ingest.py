@@ -27,7 +27,7 @@ def ingest_docs():
     all_docs = []
 
     for file in md_files:
-        loader = UnstructuredMarkdownLoader(file, mode="elements")
+        loader = UnstructuredMarkdownLoader(file ) #TODO: mode="elements"
         data = loader.load()
         for d in data:
             all_docs.append(d)
@@ -36,8 +36,8 @@ def ingest_docs():
 
 
     text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=300,
-            chunk_overlap=50,
+            chunk_size=1000,
+            chunk_overlap=200,
         )
     split_docs = text_splitter.split_documents(all_docs)
     print(f'Number of docs after splitting: {len(split_docs)}')
