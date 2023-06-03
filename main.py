@@ -19,6 +19,7 @@ import pickle
 from pathlib import Path
 from typing import Optional
 from langchain.vectorstores import VectorStore
+from langchain.chat_models import ChatOpenAI
 
 vectorstore: Optional[VectorStore] = None
 
@@ -30,7 +31,7 @@ app = FastAPI()
 # #TODO: Check if cors is needed after angular is added to static.
 origins = ["http://localhost:4200"]
 
-sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=origins)
+sio: socketio.AsyncServer = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=origins)
 socketio_app = socketio.ASGIApp(sio, app)
 app.mount("/", socketio_app)
 
@@ -85,8 +86,16 @@ async def chat(sid, data):
         cm = ChatMessage(**data)
     except ValidationErr as e:
         logging.error(e)
-    chain: LLMChain = createChain(sid, sio)
-    await chain.arun(cm.message)
+    #TODO: Add chat history
+    reinterpretedQuestion = await generate_question(cm.message, "")
+    # TODO: add number of docs fetched. 
+    docs = await queryDocs(reinterpretedQuestion, vectorstore, 2)
+    chain: LLMChain = await createChain(sid, sio) #TODO: fix the parameters passed. 
+    await chain.arun({
+        'question': reinterpretedQuestion, 
+        'context' : docs,
+        'chat_history': ""
+        })
     # logging.info("Chain complete. ")
     end_resp = ChatMessage(
         sender=MessageSender.AI, message="", type=MessageType.STREAM_END
@@ -99,20 +108,63 @@ async def chat(sid, data):
     await sio.emit("chat", command_msg.toJson(), room=sid)
     # logging.info("Done. ")
 
-
-def createChain(sid, sio):
+# TODO: maybe simplify this method to take in less params
+async def createChain(sid: str, sio: socketio.AsyncServer):
     """Create the langhcain chain."""
     stream_handler = StreamingLLMCallbackHandler(sid, sio)
+    # fix the llm used here. 
     llm = OpenAI(
         temperature=0.9, streaming=True, callbacks=[stream_handler], verbose=True
     )
     prompt = PromptTemplate(
-        input_variables=["question"],
-        template="Answer the user's question in a couple of lines. Question:  {question}?",
+        input_variables=["question", "context", "chat_history"],
+        template=QA_PROMPT,
     )
     chain = LLMChain(llm=llm, prompt=prompt)
     return chain
 
+CONDENSE_PROMPT = """Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
+Chat History:
+{chat_history}
+Follow Up Input: {question}
+Standalone question:""";
+
+# TODO: check temperature. 
+chatModel = ChatOpenAI(
+  temperature= 0,
+  streaming= True,
+  verbose= True,
+)
+
+#TODO: add URLs in the prompt.
+QA_PROMPT = """You are an AI assistant for Chatables.ai. We are a company that builds AI based chatbots.
+You are provided a "Question" from our users, some related content from our website as "Context" and previous chat history as "History".
+Provide a conversational answer to the user's question based on the information in the context.
+If you don't know the answer, nudge the user for more information. Always be friendly and helpful.
+Context: {context}
+Question: {question}
+History : {chat_history}
+Limit your answer to 125 words. Always return URLs in the answer as markdown links associated to the title of the blog or name of product.
+Answer in Markdown:"""
+
+async def generate_question(user_input: str, chat_history: str) -> str:
+    if(chat_history.strip() == ""):
+        logging.info(f'Chat history is empty. not reinterpretting the question.')
+        return user_input
+    prompt = PromptTemplate(
+        template=CONDENSE_PROMPT,
+        input_variables=["question", "chat_history"]
+    )
+    chain = LLMChain(llm=chatModel, prompt=prompt)
+    res = await chain.arun(question =  user_input, chat_history= chat_history)
+    logging.info(f"Debug: ReInterpreted question: {res}")
+    return res
+
+async def queryDocs(updatedQuestion: str, vectorStore: VectorStore, k: int):
+    docs = vectorStore.similarity_search(updatedQuestion, k=k)
+    logging.info(f'similarity search returned : {docs}')
+    content = [d.page_content for d in docs]
+    return "  ".join(content) #TODO: maybe concat better. 
 
 if __name__ == "__main__":
     import uvicorn
