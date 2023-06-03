@@ -5,8 +5,7 @@
       <ng-container *ngIf="msg.sender === 'AI'; else userMessage">
         <div class="message">
           <img src="assets/icons/bot.png" alt="bot" width="25" height="25" class="bot-icon" />
-          <div class="message-text">
-            {{ msg.message}}
+          <div class="message-text" markdown [data]="msg.message" [inline]="true">
           </div>
         </div>
       </ng-container>
