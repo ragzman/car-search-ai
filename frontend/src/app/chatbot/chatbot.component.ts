@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit, OnDestroy } from '@angular/core';
 import { Observer, Subscription } from 'rxjs';
 import { ChatService } from './chatbot.service';
+import { EventService } from '../bot-event.service';
 
 
 @Component({
@@ -16,7 +17,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     @ViewChild('scrollableAreaRef', { static: false }) scrollableAreaRef!: ElementRef;
 
 
-    constructor(private chatService: ChatService) { }
+    constructor(private chatService: ChatService, private eventService: EventService) { }
 
     ngOnInit() {
         this.socketSubscription = this.chatService.getMessages().subscribe((receivedMsg: ChatMessage) => {
@@ -33,6 +34,11 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
             } else if (receivedMsg.type == MessageType.STREAM_END) {
                 this.loading = false
                 //TODO: do something else too? 
+            }
+            else if (receivedMsg.type == MessageType.COMMAND){
+                //TODO: change format of this command message. 
+                // console.log(`emiting event: ${receivedMsg}`)
+                this.eventService.emitEvent(receivedMsg.message)
             }
         });
     }
