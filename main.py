@@ -15,6 +15,12 @@ from models.schemas import MessageSender
 from models.schemas import MessageType
 from fastapi.middleware.cors import CORSMiddleware
 import socketio
+import pickle
+from pathlib import Path
+from typing import Optional
+from langchain.vectorstores import VectorStore
+
+vectorstore: Optional[VectorStore] = None
 
 
 load_dotenv()  # Load environment variables from .env file
@@ -36,6 +42,15 @@ templates = Jinja2Templates(directory="templates")
 # TODO(Aditya): fix logging config location.
 logging.basicConfig(level=logging.INFO)
 from langchain.prompts import PromptTemplate
+
+@app.on_event("startup")
+async def startup_event():
+    logging.info("loading vectorstore")
+    if not Path("vectorstore.pkl").exists():
+        raise ValueError("vectorstore.pkl does not exist, please run ingest.py first")
+    with open("vectorstore.pkl", "rb") as f:
+        global vectorstore
+        vectorstore = pickle.load(f)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -77,7 +92,7 @@ async def chat(sid, data):
         sender=MessageSender.AI, message="", type=MessageType.STREAM_END
     )
     await sio.emit("chat", end_resp.toJson(), room=sid)
-    #TODO: change format of this command message. 
+    # TODO: change format of this command message.
     command_msg = ChatMessage(
         sender=MessageSender.AI, message="home", type=MessageType.COMMAND
     )
