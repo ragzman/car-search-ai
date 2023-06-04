@@ -32,11 +32,11 @@ Standalone question:"""
 # TODO: add URLs in the prompt.
 # Always return the url fields from the context in the answer as markdown links associated to the title of the blog or name of product.
 HUMAN_MSG_TEMPLATE = """You are provided a "Question" from our users, some related content from our website as "Context" and previous chat history as "History".
-If you don't know the answer, nudge the user for more information. Always be friendly and helpful.
 Context: {context}
 Question: {question}
-Limit your answer to 125 words. 
+Provide an answer to the Question based on the context. Limit your answer to 125 words. 
 You should only use urls that are explicitly listed as a url in the context. Do NOT make up a URL that is not listed.
+If you don't know the answer, nudge the user for more information. Always be friendly and helpful.
 Answer in Markdown:"""
 
 system_message_prompt = SystemMessagePromptTemplate.from_template(
