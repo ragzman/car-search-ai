@@ -91,6 +91,7 @@ async def chat(sid, data):
     # TODO: Add chat history
     reinterpretedQuestion = await generate_question(cm.message, "")
     # TODO: add number of docs fetched.
+    # TODO: metadata from the fetched docs is thrown away. let's get URLs from there.
     k = 2
     docs = await queryDocs(reinterpretedQuestion, vectorstore, k)
 
