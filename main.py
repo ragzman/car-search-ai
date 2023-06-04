@@ -96,7 +96,8 @@ async def chat(sid, data):
 
     chain: ConversationChain = createChain()
     await chain.acall(
-        {"question": reinterpretedQuestion, "context": docs}, callbacks=[StreamingLLMCallbackHandler(sid, sio)]
+        {"question": reinterpretedQuestion, "context": docs},
+        callbacks=[StreamingLLMCallbackHandler(sid, sio)],
     )
     # logging.info("Chain complete. ")
     end_resp = ChatMessage(
