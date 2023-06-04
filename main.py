@@ -8,6 +8,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from langchain import LLMChain
 from ai.query import createChain, generate_question, queryDocs
+from langchain.chains import ConversationChain
+from callback import StreamingLLMCallbackHandler
 
 from models.schemas import ChatMessage
 from models.schemas import MessageSender
@@ -29,7 +31,9 @@ app = FastAPI()
 # #TODO: Check if cors is needed after angular is added to static.
 origins = ["http://localhost:4200"]
 
-sio: socketio.AsyncServer = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=origins)
+sio: socketio.AsyncServer = socketio.AsyncServer(
+    async_mode="asgi", cors_allowed_origins=origins
+)
 socketio_app = socketio.ASGIApp(sio, app)
 app.mount("/", socketio_app)
 
@@ -40,6 +44,7 @@ templates = Jinja2Templates(directory="templates")
 
 # TODO(Aditya): fix logging config location.
 logging.basicConfig(level=logging.INFO)
+
 
 @app.on_event("startup")
 async def startup_event():
@@ -83,17 +88,16 @@ async def chat(sid, data):
         cm = ChatMessage(**data)
     except ValidationErr as e:
         logging.error(e)
-    #TODO: Add chat history
+    # TODO: Add chat history
     reinterpretedQuestion = await generate_question(cm.message, "")
-    # TODO: add number of docs fetched. 
+    # TODO: add number of docs fetched.
     k = 2
     docs = await queryDocs(reinterpretedQuestion, vectorstore, k)
-    chain: LLMChain = await createChain(sid, sio)
-    await chain.arun({
-        'question': reinterpretedQuestion, 
-        'context' : docs,
-        'chat_history': ""
-        })
+
+    chain: ConversationChain = createChain()
+    await chain.acall(
+        {"question": reinterpretedQuestion, "context": docs}, callbacks=[StreamingLLMCallbackHandler(sid, sio)]
+    )
     # logging.info("Chain complete. ")
     end_resp = ChatMessage(
         sender=MessageSender.AI, message="", type=MessageType.STREAM_END
@@ -107,7 +111,7 @@ async def chat(sid, data):
     # logging.info("Done. ")
 
 
-#TODO: add a page for bot-first-website-design
+# TODO: add a page for bot-first-website-design
 
 if __name__ == "__main__":
     import uvicorn
