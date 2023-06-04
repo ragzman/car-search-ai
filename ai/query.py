@@ -86,7 +86,7 @@ def createChain(sid: str):
         table_name="SessionTable",
         session_id=sid,
     )
-    #TODO: use chat memory. 
+    #TODO: limit the number of items in memory.
     memoryDB = ConversationBufferMemory(
         return_messages=True,
         memory_key="history",
