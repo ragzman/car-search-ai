@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit, OnDestroy } from '@angular/core';
-import { Observer, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ChatService } from './chatbot.service';
 import { EventService } from '../bot-event.service';
 
