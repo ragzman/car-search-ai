@@ -2,9 +2,6 @@ import logging
 from langchain import LLMChain, OpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chat_models import ChatOpenAI
-from callback import StreamingLLMCallbackHandler
-from socketio import AsyncServer
-from langchain.chains import ConversationChain
 from langchain.vectorstores import VectorStore
 from dotenv import load_dotenv
 from langchain.memory import ConversationBufferMemory
@@ -13,13 +10,10 @@ from langchain.prompts import (
     ChatPromptTemplate,
     PromptTemplate,
     SystemMessagePromptTemplate,
-    AIMessagePromptTemplate,
-    MessagesPlaceholder,
     HumanMessagePromptTemplate,
 )
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
 import boto3
-import os
 from langchain.memory.chat_message_histories import DynamoDBChatMessageHistory
 
 load_dotenv()  # Load environment variables from .env file
@@ -90,7 +84,6 @@ def createChain(sid: str):
     """Create the langhcain chain."""
     chat_history = DynamoDBChatMessageHistory(
         table_name="SessionTable",
-        # parti="id",
         session_id=sid,
     )
     #TODO: use chat memory. 
