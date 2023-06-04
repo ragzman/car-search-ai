@@ -95,7 +95,7 @@ async def chat(sid, data):
     k = 2
     docs = await queryDocs(reinterpretedQuestion, vectorstore, k)
 
-    chain: ConversationChain = createChain()
+    chain: ConversationChain = createChain(sid)
     await chain.acall(
         {"question": reinterpretedQuestion, "context": docs},
         callbacks=[StreamingLLMCallbackHandler(sid, sio)],

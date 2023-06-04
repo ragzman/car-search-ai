@@ -18,9 +18,34 @@ from langchain.prompts import (
     HumanMessagePromptTemplate,
 )
 from langchain.schema import AIMessage, HumanMessage, SystemMessage
-
+import boto3
+import os
+from langchain.memory.chat_message_histories import DynamoDBChatMessageHistory
 
 load_dotenv()  # Load environment variables from .env file
+
+dynamodb = boto3.resource('dynamodb')
+
+# # Create the DynamoDB table.
+# table = dynamodb.create_table(
+#     TableName='SessionTable',
+#     KeySchema=[
+#         {
+#             'AttributeName': 'SessionId',
+#             'KeyType': 'HASH'
+#         }
+#     ],
+#     AttributeDefinitions=[
+#         {
+#             'AttributeName': 'SessionId',
+#             'AttributeType': 'S'
+#         }
+#     ],
+#     BillingMode='PAY_PER_REQUEST',
+# )
+
+# Wait until the table exists.
+# table.meta.client.get_waiter('table_exists').wait(TableName='SessionTable')
 
 
 CONDENSE_PROMPT = """Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.
@@ -61,14 +86,26 @@ chatModel = ChatOpenAI(
 
 
 # TODO: maybe simplify this method to take in less params
-def createChain():
+def createChain(sid: str):
     """Create the langhcain chain."""
+    chat_history = DynamoDBChatMessageHistory(
+        table_name="SessionTable",
+        # parti="id",
+        session_id=sid,
+    )
+    #TODO: use chat memory. 
+    memoryDB = ConversationBufferMemory(
+        return_messages=True,
+        memory_key="history",
+        input_key="question",
+        chat_memory=chat_history,
+    )
 
     chain = LLMChain(
         llm=chatModel,
         prompt=chat_prompt,
         verbose=True,
-        # memory=ConversationBufferMemory(),
+        memory=memoryDB,
     )
     return chain
 
