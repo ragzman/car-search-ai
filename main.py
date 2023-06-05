@@ -50,11 +50,6 @@ async def startup_event():
         vectorstore = pickle.load(f)
 
 
-@app.get("/", response_class=HTMLResponse)
-async def read_root(request: Request):
-    # logging.info("*********In ReadRoot:")
-    return templates.TemplateResponse("index.html", {"request": request})
-
 
 @sio.event
 def connect(sid, environ):
