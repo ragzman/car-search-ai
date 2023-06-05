@@ -5,8 +5,6 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from langchain import LLMChain
 from ai.query import createChain, generate_question, queryDocs
 from langchain.chains import ConversationChain
 from callback import StreamingLLMCallbackHandler
@@ -21,25 +19,22 @@ from pathlib import Path
 from typing import Optional
 from langchain.vectorstores import VectorStore
 
-vectorstore: Optional[VectorStore] = None
-
 
 load_dotenv()  # Load environment variables from .env file
 
 app = FastAPI()
 
-# #TODO: Check if cors is needed after angular is added to static.
-origins = ["http://localhost:4200"]
-
-sio: socketio.AsyncServer = socketio.AsyncServer(
-    async_mode="asgi", cors_allowed_origins=origins
-)
+sio: socketio.AsyncServer = socketio.AsyncServer(async_mode="asgi")
 socketio_app = socketio.ASGIApp(sio, app)
-app.mount("/socket.io", socketio_app)
+# mount socket.io on /sock.
+app.mount("/sock", socketio_app)
 
-app.mount("/", StaticFiles(directory="frontend/dist/frontend", html=True), name="static")
+# mount angular dist.
+app.mount(
+    "/", StaticFiles(directory="frontend/dist/frontend", html=True), name="static"
+)
 
-templates = Jinja2Templates(directory="templates")
+vectorstore: Optional[VectorStore] = None
 
 # TODO(Aditya): fix logging config location.
 logging.basicConfig(level=logging.INFO)
@@ -90,10 +85,11 @@ async def chat(sid, data):
     # TODO: Add chat history
     reinterpretedQuestion = await generate_question(cm.message, "")
     # TODO: add number of docs fetched.
+    # TODO: metadata from the fetched docs is thrown away. let's get URLs from there.
     k = 2
     docs = await queryDocs(reinterpretedQuestion, vectorstore, k)
 
-    chain: ConversationChain = createChain()
+    chain: ConversationChain = createChain(sid)
     await chain.acall(
         {"question": reinterpretedQuestion, "context": docs},
         callbacks=[StreamingLLMCallbackHandler(sid, sio)],
