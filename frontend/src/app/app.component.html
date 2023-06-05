@@ -1,46 +1,20 @@
-<style>
-
-</style>
-
-
 <!-- Toolbar -->
-<div class="toolbar" role="banner">
+<div class="flex items-center justify-between bg-blue-500 text-white p-4">
   <span>Welcome</span>
-  <div class="spacer"></div>
-  <mat-slide-toggle>Toggle me!</mat-slide-toggle>
-
+  <div class="flex-grow"></div>
+  <mat-slide-toggle class="ml-4">Toggle me!</mat-slide-toggle>
 </div>
-<br>
-
-<mat-card class="example-card">
-  <mat-card-header>
-    <mat-card-title>Shiba Inu</mat-card-title>
-    <mat-card-subtitle>Dog Breed</mat-card-subtitle>
-  </mat-card-header>
-  <mat-card-content>
-    <p>This card indeterminates progress bar.</p>
-    <p>"some long txt"</p>
-  </mat-card-content>
-  <mat-card-actions>
-    <button mat-button>LIKE</button>
-    <button mat-button>SHARE</button>
-  </mat-card-actions>
-</mat-card>
-
 
 <div class="content" role="main">
   <ai-chatbot></ai-chatbot>
 </div>
 
 <div class="links">
-
-
-  <a routerLink="/pages/home">Home</a>
+  <a routerLink="/pages/home" class="text-blue-500">Home</a>
   <br>
-  <a routerLink="/pages/aboutus">Why should you add a ChatBot to your website?</a>
+  <a routerLink="/pages/aboutus" class="text-blue-500">Why should you add a ChatBot to your website?</a>
   <br>
-  <a routerLink="/pages/whatIsChatables.ai">Why did you choose your name?</a>
+  <a routerLink="/pages/whatIsChatables.ai" class="text-blue-500">Why did you choose your name?</a>
 </div>
-
 
 <router-outlet></router-outlet>
