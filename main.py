@@ -35,10 +35,9 @@ sio: socketio.AsyncServer = socketio.AsyncServer(
     async_mode="asgi", cors_allowed_origins=origins
 )
 socketio_app = socketio.ASGIApp(sio, app)
-app.mount("/", socketio_app)
+app.mount("/socket.io", socketio_app)
 
-
-app.mount("/static", StaticFiles(directory="dist"), name="static")
+app.mount("/", StaticFiles(directory="frontend/dist/frontend", html=True), name="static")
 
 templates = Jinja2Templates(directory="templates")
 
