@@ -23,12 +23,6 @@ COPY . .
 # Install Node.js dependencies
 RUN npm install
 
-# Install Gulp globally
-RUN npm install -g gulp
-
-# Build the frontend assets
-RUN gulp
-
 # Build the frontend
 RUN cd frontend && npm install && ng build
 
