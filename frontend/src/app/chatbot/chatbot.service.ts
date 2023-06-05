@@ -10,7 +10,8 @@ export class ChatService {
   private socket: Socket;
 
   constructor() {
-    this.socket = io('ws://localhost:8000/'); //TODO: Replace with your Socket.IO server URL
+    // socket.io is mounted on /sock on the server.
+    this.socket = io('/', { path: "/sock/socket.io", });
     this.initSocketListeners();
   }
 
