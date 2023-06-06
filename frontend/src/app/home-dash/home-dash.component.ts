@@ -16,18 +16,18 @@ export class HomeDashComponent {
     map(({ matches }) => {
       if (matches) {
         return [
-          { title: 'Card 1', cols: 2, rows: 1 },
-          { title: 'Card 2', cols: 1, rows: 1 },
-          { title: 'Card 3', cols: 1, rows: 1 },
-          { title: 'Card 4', cols: 1, rows: 1 }
+          { title: 'Effortless Navigation and Enhanced User Journeys', cols: 2, rows: 3, url: '/assets/posts/home.md' },
+          { title: 'Revolutionize Your Website Experience with AI-Powered Chatbots', cols: 1, rows: 3, url: '/assets/posts/aboutus.md' },
+          { title: 'Welcome to Chatables.ai', cols: 1, rows: 3, url: '/assets/posts/whatIsChatables.ai.md' },
+          { title: 'Services', cols: 1, rows: 1, url: '/assets/posts/services.md' }
         ];
       }
 
       return [
-        { title: 'Card 1', cols: 2, rows: 1 },
-        { title: 'Card 2', cols: 1, rows: 1 },
-        { title: 'Card 3', cols: 1, rows: 2 },
-        { title: 'Card 4', cols: 1, rows: 1 }
+        { title: 'Effortless Navigation and Enhanced User Journeys', cols: 2, rows: 3, url: '/assets/posts/home.md' },
+        { title: 'Revolutionize Your Website Experience with AI-Powered Chatbots', cols: 1, rows: 3, url: '/assets/posts/aboutus.md' },
+        { title: 'Welcome to Chatables.ai', cols: 1, rows: 3, url: '/assets/posts/whatIsChatables.ai.md' },
+        { title: 'Services', cols: 1, rows: 1, url: '/assets/posts/services.md' }
       ];
     })
   );
