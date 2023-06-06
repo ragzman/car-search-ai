@@ -1,8 +1,8 @@
-<div class="mat-card chat-history" #scrollableAreaRef>
+<div class="chat-history" #scrollableAreaRef>
   <div *ngFor="let msg of chatHistory; let index = index"
     [ngClass]="{'message-container': true, 'fade-in': index === chatHistory.length - 1}">
     <ng-container *ngIf="msg.sender === 'AI'; else userMessage">
-      <div class="mat-card message">
+      <div class="message">
         <img src="assets/icons/bot.png" alt="bot" width="25" height="25" class="bot-icon" />
         <div class="message-text" markdown [data]="msg.message" [inline]="true">
         </div>
@@ -10,7 +10,7 @@
     </ng-container>
 
     <ng-template #userMessage>
-      <div class="mat-card message">
+      <div class="message">
         <img src="assets/icons/usericon.png" alt="Human" width="25" height="25" class="user-icon" />
         <div class="message-text">
           {{ msg.message}}
@@ -37,3 +37,41 @@
     </div>
   </div>
 </form>
+
+<!-- Old Chatbox Code -->
+<!-- <div>
+  <div class="chat-history" #scrollableAreaRef>
+    <div *ngFor="let msg of chatHistory; let index = index"
+      [ngClass]="{'message-container': true, 'fade-in': index === chatHistory.length - 1}">
+      <ng-container *ngIf="msg.sender === 'AI'; else userMessage">
+        <div class="message">
+          <img src="assets/icons/bot.png" alt="bot" width="25" height="25" class="bot-icon" />
+          <div class="message-text" markdown [data]="msg.message" [inline]="true">
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-template #userMessage>
+        <div class="message">
+          <img src="assets/icons/usericon.png" alt="Human" width="25" height="25" class="user-icon" />
+          <div class="message-text">
+            {{ msg.message}}
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+<div class="input-area">
+  <form (ngSubmit)="sendMessage()">
+    <div class="input-wrapper">
+      <textarea [disabled]="loading" (keyup.enter)="sendMessage()" #textAreaRef [autofocus]="false" rows="2"
+        maxLength="512" id="userInput" name="userInput"
+        [placeholder]="loading ? 'Waiting for response...' : 'Type your question...'" [(ngModel)]="userInput"
+        class="textarea"></textarea>
+      <button type="submit" [disabled]="loading" class="generate-button">
+        Send
+      </button>
+    </div>
+  </form>
+</div> -->
