@@ -14,12 +14,23 @@ import { PostsComponent } from './home/posts/posts.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
+import { HomeDashComponent } from './home-dash/home-dash.component';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { HomeNavComponent } from './home-nav/home-nav.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
 
 @NgModule({
   declarations: [
     AppComponent,
     ChatbotComponent,
     PostsComponent,
+    HomeDashComponent,
+    HomeNavComponent,
   ],
   imports: [
     BrowserModule,
@@ -30,6 +41,13 @@ import { MatCardModule } from '@angular/material/card';
     MatSlideToggleModule,
     BrowserAnimationsModule,
     MatCardModule,
+    MatGridListModule,
+    MatMenuModule,
+    MatIconModule,
+    MatButtonModule,
+    MatToolbarModule,
+    MatSidenavModule,
+    MatListModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
