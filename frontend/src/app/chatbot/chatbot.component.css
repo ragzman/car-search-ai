@@ -1,3 +1,31 @@
+.full-width {
+  width: 100%;
+}
+
+.shipping-card {
+  min-width: 120px;
+  margin: 20px auto;
+}
+
+.mat-radio-button {
+  display: block;
+  margin: 5px 0;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.col {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.col:last-child {
+  margin-right: 0;
+}
+
 .chat-history {
   @apply h-48 overflow-y-auto;
 }
@@ -46,6 +74,7 @@
     @apply bg-green-600;
   }
 }
+
 /* 
 .bot-icon {
   @apply filter invert-60;
@@ -70,6 +99,7 @@
 .user-message {
   @apply bg-blue-100 rounded-md p-2;
 }
+
 /* 
 .fade-in {
   @apply animation fade-in 0.5s ease-in-out;
