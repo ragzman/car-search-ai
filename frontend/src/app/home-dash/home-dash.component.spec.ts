@@ -7,6 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 
 import { HomeDashComponent } from './home-dash.component';
+import { PostsComponent } from '../home/posts/posts.component';
+import { ChatbotComponent } from '../chatbot/chatbot.component';
 
 describe('HomeDashComponent', () => {
   let component: HomeDashComponent;
@@ -22,6 +24,8 @@ describe('HomeDashComponent', () => {
         MatGridListModule,
         MatIconModule,
         MatMenuModule,
+        PostsComponent,
+        ChatbotComponent
       ]
     }).compileComponents();
   }));

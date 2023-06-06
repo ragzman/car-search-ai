@@ -10,7 +10,6 @@ import { EventService } from 'src/app/bot-event.service';
 export class PostsComponent implements OnInit {
 
   post!: string; // add this
-  href!: string; // add this
 
   constructor(private route: ActivatedRoute, private eventService: EventService) { } // Modify this, to add the ActivatedRoute
 

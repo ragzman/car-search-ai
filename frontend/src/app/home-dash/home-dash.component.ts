@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { map } from 'rxjs/operators';
 
+
 @Component({
   selector: 'app-home-dash',
   templateUrl: './home-dash.component.html',
@@ -15,7 +16,7 @@ export class HomeDashComponent {
     map(({ matches }) => {
       if (matches) {
         return [
-          { title: 'Card 1', cols: 1, rows: 1 },
+          { title: 'Card 1', cols: 2, rows: 1 },
           { title: 'Card 2', cols: 1, rows: 1 },
           { title: 'Card 3', cols: 1, rows: 1 },
           { title: 'Card 4', cols: 1, rows: 1 }
