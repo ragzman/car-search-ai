@@ -9,6 +9,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { HomeDashComponent } from './home-dash.component';
 import { PostsComponent } from '../home/posts/posts.component';
 import { ChatbotComponent } from '../chatbot/chatbot.component';
+import { MarkdownComponent } from 'ngx-markdown';
 
 describe('HomeDashComponent', () => {
   let component: HomeDashComponent;
@@ -25,7 +26,8 @@ describe('HomeDashComponent', () => {
         MatIconModule,
         MatMenuModule,
         PostsComponent,
-        ChatbotComponent
+        ChatbotComponent,
+        MarkdownComponent
       ]
     }).compileComponents();
   }));

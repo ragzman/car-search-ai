@@ -8,16 +8,24 @@
           </mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content">
-  <ai-chatbot></ai-chatbot>
-  <div></div>
+          <ai-chatbot></ai-chatbot>
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>
     <mat-grid-tile [colspan]="1" [rowspan]="1">
       <mat-card class="dashboard-card">
-        <app-posts [post]="'./assets/posts/home.md'"></app-posts>
+        <mat-card-header>
+          <mat-card-title>
+            Home
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <markdown [src]="'/assets/posts/home.md'">
+          </markdown>
+        </mat-card-content>
       </mat-card>
     </mat-grid-tile>
+
     <mat-grid-tile *ngFor="let card of cards | async" [colspan]="card.cols" [rowspan]="card.rows">
       <mat-card class="dashboard-card">
         <mat-card-header>
