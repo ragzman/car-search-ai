@@ -5,7 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ChatbotComponent } from './chatbot/chatbot.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { SecurityContext } from '@angular/core';
 import { MarkdownModule } from 'ngx-markdown';
@@ -23,6 +23,10 @@ import { HomeNavComponent } from './home-nav/home-nav.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
+import { ContactUsComponent } from './contact-us/contact-us.component';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatRadioModule } from '@angular/material/radio';
 
 @NgModule({
   declarations: [
@@ -31,6 +35,7 @@ import { MatListModule } from '@angular/material/list';
     PostsComponent,
     HomeDashComponent,
     HomeNavComponent,
+    ContactUsComponent,
   ],
   imports: [
     BrowserModule,
@@ -48,6 +53,10 @@ import { MatListModule } from '@angular/material/list';
     MatToolbarModule,
     MatSidenavModule,
     MatListModule,
+    MatInputModule,
+    MatSelectModule,
+    MatRadioModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
