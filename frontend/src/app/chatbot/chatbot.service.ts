@@ -11,7 +11,10 @@ export class ChatService {
 
   constructor() {
     // socket.io is mounted on /sock on the server.
-    this.socket = io('/', { path: "/sock/socket.io", });
+    // if using frontend as dist folder, use below line.
+    // this.socket = io('/', { path: "/sock/socket.io", });
+    // if using frontend as separate server, use below line.
+    this.socket = io('http://localhost:8000/', { path: "/sock/socket.io", });
     this.initSocketListeners();
   }
 
