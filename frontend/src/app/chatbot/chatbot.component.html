@@ -1,6 +1,7 @@
-<div class="chat-history" #scrollableAreaRef>
+<!-- <mat-list class="chat-history" #scrollableAreaRef> -->
+<mat-list class="chat-history" scrollToBottom [trigger]="chatHistory.length+150">
   <div *ngFor="let msg of chatHistory; let index = index"
-    [ngClass]="{'message-container': true, 'fade-in': index === chatHistory.length - 1}">
+    [ngClass]="{'message-container': true, 'fade-in': index === chatHistory.length}">
     <ng-container *ngIf="msg.sender === 'AI'; else userMessage">
       <div class="message">
         <img src="assets/icons/bot.png" alt="bot" width="25" height="25" class="bot-icon" />
@@ -18,7 +19,7 @@
       </div>
     </ng-template>
   </div>
-</div>
+</mat-list>
 <form (ngSubmit)="sendMessage()">
   <div class="row">
     <div class="col">

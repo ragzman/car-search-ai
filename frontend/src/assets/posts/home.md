@@ -1,8 +1,6 @@
-# Effortless Navigation and Enhanced User Journeys
-
 At Chatables.ai, our primary goal is to simplify and enhance the way your customers find products, services, and information on your website. We achieve this by leveraging AI chatbots that are customized specifically for your unique use case. With our chatbots at the forefront of our website design, we provide a seamless and intuitive navigation experience.
 
-## Our Key Services and Features
+### Our Key Services and Features
 
 - **Tailored AI Chatbots**: We create AI chatbots that are tailored to meet your specific needs and objectives. Whether you require a chatbot for customer support, lead generation, or interactive marketing campaigns, our team of experts will design and develop a chatbot that aligns perfectly with your use case.
 

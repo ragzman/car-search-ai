@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ChatbotComponent } from './chatbot/chatbot.component';
+import { ScrollToBottomDirective } from './chatbot/chatbot.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { SecurityContext } from '@angular/core';
@@ -32,6 +33,7 @@ import { MatRadioModule } from '@angular/material/radio';
   declarations: [
     AppComponent,
     ChatbotComponent,
+    ScrollToBottomDirective,
     PostsComponent,
     HomeDashComponent,
     HomeNavComponent,

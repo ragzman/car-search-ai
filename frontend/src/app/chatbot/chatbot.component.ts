@@ -2,7 +2,22 @@ import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit, OnDestroy }
 import { Subscription } from 'rxjs';
 import { ChatService } from './chatbot.service';
 import { EventService } from '../bot-event.service';
+import { Directive, OnChanges, Input } from '@angular/core';
 
+@Directive({
+    selector: '[scrollToBottom]'
+})
+export class ScrollToBottomDirective implements OnChanges {
+    @Input()
+    trigger!: number;
+
+    constructor(private el: ElementRef) { }
+
+    ngOnChanges() {
+        this.el.nativeElement.scrollTop = this.el.nativeElement.scrollHeight;
+        console.log(this.el.nativeElement.scrollTop)
+    }
+}
 
 @Component({
     selector: 'ai-chatbot',
@@ -35,7 +50,7 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
                 this.loading = false
                 //TODO: do something else too? 
             }
-            else if (receivedMsg.type == MessageType.COMMAND){
+            else if (receivedMsg.type == MessageType.COMMAND) {
                 //TODO: change format of this command message. 
                 // console.log(`emiting event: ${receivedMsg}`)
                 this.eventService.emitEvent(receivedMsg.message)
@@ -64,14 +79,14 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
 
     ngAfterViewChecked(): void {
-        this.scrollToBottom();
+        // this.scrollToBottom();
     }
 
-    scrollToBottom() {
-        try {
-            this.scrollableAreaRef.nativeElement.scrollTop = this.scrollableAreaRef.nativeElement.scrollHeight;
-        } catch (err) { }
-    }
+    // scrollToBottom() {
+    //     try {
+    //         this.scrollableAreaRef.nativeElement.scrollTop = this.scrollableAreaRef.nativeElement.scrollHeight;
+    //     } catch (err) { }
+    // }
 }
 
 

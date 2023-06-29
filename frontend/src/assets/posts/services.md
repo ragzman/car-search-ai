@@ -1,5 +1,3 @@
-# Services
-
 - AI-Based Chatbots
 - Make ChatGPT-based intelligent chatbots
 - Train for your specific data and use case
