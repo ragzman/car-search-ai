@@ -15,7 +15,6 @@ export class ScrollToBottomDirective implements OnChanges {
 
     ngOnChanges() {
         this.el.nativeElement.scrollTop = this.el.nativeElement.scrollHeight;
-        console.log(this.el.nativeElement.scrollTop)
     }
 }
 
