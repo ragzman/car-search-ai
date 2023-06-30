@@ -1,4 +1,6 @@
 import logging
+import random
+import string
 from xml.dom import ValidationErr
 
 from dotenv import load_dotenv
@@ -24,7 +26,10 @@ load_dotenv()  # Load environment variables from .env file
 
 app = FastAPI()
 
-sio: socketio.AsyncServer = socketio.AsyncServer(async_mode="asgi")
+# use below line for production.
+# sio: socketio.AsyncServer = socketio.AsyncServer(async_mode="asgi")
+# use below line for development to enable CORS.
+sio: socketio.AsyncServer = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="http://localhost:4200")
 socketio_app = socketio.ASGIApp(sio, app)
 # mount socket.io on /sock.
 app.mount("/sock", socketio_app)
@@ -49,11 +54,6 @@ async def startup_event():
         global vectorstore
         vectorstore = pickle.load(f)
 
-
-@app.get("/", response_class=HTMLResponse)
-async def read_root(request: Request):
-    # logging.info("*********In ReadRoot:")
-    return templates.TemplateResponse("index.html", {"request": request})
 
 
 @sio.event
@@ -104,6 +104,11 @@ async def chat(sid, data):
         sender=MessageSender.AI, message="home", type=MessageType.COMMAND
     )
     await sio.emit("chat", command_msg.toJson(), room=sid)
+    # TODO: generate quick actions and remove the random letters
+    quick_action = ChatMessage(
+        sender=MessageSender.AI, message=''.join(random.choice(string.ascii_letters) for _ in range(5)), type=MessageType.QUICK_ACTION
+    )
+    await sio.emit("chat", quick_action.toJson(), room=sid)
     # logging.info("Done. ")
 
 

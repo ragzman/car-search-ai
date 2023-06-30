@@ -45,18 +45,6 @@ conda deactivate
 npm install
 ```
 
-### Install Gulp globally
-
-```bash
-npm install -g gulp
-```
-
-### Run Gulp
-
-```bash
-gulp
-```
-
 ### Start the backend server
 
 ```bash

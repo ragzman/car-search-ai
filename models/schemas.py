@@ -10,7 +10,8 @@ class MessageType(Enum):
     STREAM_MSG = "STREAM_MSG"
     COMMAND = "COMMAND"
     CLIENT_QUESTION = "CLIENT_QUESTION"
-
+    QUICK_ACTION = "QUICK_ACTION"
+    
     def __str__(self):
         return self.value
 

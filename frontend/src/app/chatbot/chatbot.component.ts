@@ -2,7 +2,21 @@ import { Component, ElementRef, ViewChild, AfterViewChecked, OnInit, OnDestroy }
 import { Subscription } from 'rxjs';
 import { ChatService } from './chatbot.service';
 import { EventService } from '../bot-event.service';
+import { Directive, OnChanges, Input } from '@angular/core';
 
+@Directive({
+    selector: '[scrollToBottom]'
+})
+export class ScrollToBottomDirective implements OnChanges {
+    @Input()
+    trigger!: number;
+
+    constructor(private el: ElementRef) { }
+
+    ngOnChanges() {
+        this.el.nativeElement.scrollTop = this.el.nativeElement.scrollHeight;
+    }
+}
 
 @Component({
     selector: 'ai-chatbot',
@@ -11,6 +25,8 @@ import { EventService } from '../bot-event.service';
 })
 export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     chatHistory: ChatMessage[] = [];
+    quickActions: string[] = [];
+    maxSizeQuickActions: number = 5;
     userInput: string = '';
     loading: boolean = false;
     private socketSubscription: Subscription | undefined;
@@ -20,6 +36,10 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     constructor(private chatService: ChatService, private eventService: EventService) { }
 
     ngOnInit() {
+        // default chatbot welcome message
+        this.chatHistory.push({ message: "Hi, I am Chatables.ai. How can I help you today?", sender: MessageSender.AI, type: MessageType.STREAM_END });
+        // this.quickActions.push("Welcome Bubble")
+        this.updateQuickActions("Welcome Bubble!")
         this.socketSubscription = this.chatService.getMessages().subscribe((receivedMsg: ChatMessage) => {
             // console.log(`Message Received in component.ts: ${receivedMsg}`)
             // console.log(`receviedMsg.type: ${receivedMsg.type}`)
@@ -35,12 +55,26 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
                 this.loading = false
                 //TODO: do something else too? 
             }
-            else if (receivedMsg.type == MessageType.COMMAND){
+            else if (receivedMsg.type == MessageType.COMMAND) {
                 //TODO: change format of this command message. 
                 // console.log(`emiting event: ${receivedMsg}`)
                 this.eventService.emitEvent(receivedMsg.message)
             }
+            else if (receivedMsg.type == MessageType.QUICK_ACTION) {
+                this.updateQuickActions(receivedMsg.message)
+            }
         });
+    }
+
+    updateQuickActions(message: string) {
+        if (!this.quickActions.includes(message)) {
+            this.quickActions.unshift(message);
+        }
+
+        if (this.quickActions.length > this.maxSizeQuickActions) {
+            // Remove elements from the back of the array
+            this.quickActions.splice(this.maxSizeQuickActions);
+        }
     }
 
     ngOnDestroy() {
@@ -64,14 +98,20 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     }
 
     ngAfterViewChecked(): void {
-        this.scrollToBottom();
+        // this.scrollToBottom();
     }
 
-    scrollToBottom() {
-        try {
-            this.scrollableAreaRef.nativeElement.scrollTop = this.scrollableAreaRef.nativeElement.scrollHeight;
-        } catch (err) { }
+    // For Quick Actions Bubbles
+    quickAction(action: string) {
+        this.userInput = action;
+        this.sendMessage();
     }
+
+    // scrollToBottom() {
+    //     try {
+    //         this.scrollableAreaRef.nativeElement.scrollTop = this.scrollableAreaRef.nativeElement.scrollHeight;
+    //     } catch (err) { }
+    // }
 }
 
 
@@ -88,11 +128,10 @@ export enum MessageType {
     STREAM_MSG = "STREAM_MSG",
     COMMAND = "COMMAND",
     CLIENT_QUESTION = "CLIENT_QUESTION",
+    QUICK_ACTION = "QUICK_ACTION",
 }
 
 export enum MessageSender {
     HUMAN = 'HUMAN',
     AI = 'AI',
 }
-
-
