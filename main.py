@@ -1,4 +1,6 @@
 import logging
+import random
+import string
 from xml.dom import ValidationErr
 
 from dotenv import load_dotenv
@@ -102,8 +104,9 @@ async def chat(sid, data):
         sender=MessageSender.AI, message="home", type=MessageType.COMMAND
     )
     await sio.emit("chat", command_msg.toJson(), room=sid)
+    # TODO: generate quick actions and remove the random letters
     quick_action = ChatMessage(
-        sender=MessageSender.AI, message="test_bubble", type=MessageType.QUICK_ACTION
+        sender=MessageSender.AI, message=''.join(random.choice(string.ascii_letters) for _ in range(5)), type=MessageType.QUICK_ACTION
     )
     await sio.emit("chat", quick_action.toJson(), room=sid)
     # logging.info("Done. ")
