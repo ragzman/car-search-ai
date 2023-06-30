@@ -17,7 +17,7 @@
 }
 
 .chat-history {
-  height: 150px;
+  height: 6rem;
   /* Set your desired height here */
   overflow-y: auto;
 }
@@ -42,6 +42,17 @@
   background: #ebf8ff;
   border-radius: 4px;
   padding: 2px;
+}
+
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.quick-actions button {
+  margin-right: 5px;
+  margin-bottom: 5px;
 }
 
 /* mat-list {

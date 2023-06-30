@@ -26,6 +26,8 @@ export class ScrollToBottomDirective implements OnChanges {
 })
 export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     chatHistory: ChatMessage[] = [];
+    quickActions: string[] = [];
+    maxSizeQuickActions: number = 5;
     userInput: string = '';
     loading: boolean = false;
     private socketSubscription: Subscription | undefined;
@@ -35,6 +37,10 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     constructor(private chatService: ChatService, private eventService: EventService) { }
 
     ngOnInit() {
+        // default chatbot welcome message
+        this.chatHistory.push({ message: "Hi, I am Chatables.ai. How can I help you today?", sender: MessageSender.AI, type: MessageType.STREAM_END });
+        // this.quickActions.push("Welcome Bubble")
+        this.updateQuickActions("Welcome Bubble!")
         this.socketSubscription = this.chatService.getMessages().subscribe((receivedMsg: ChatMessage) => {
             // console.log(`Message Received in component.ts: ${receivedMsg}`)
             // console.log(`receviedMsg.type: ${receivedMsg.type}`)
@@ -55,7 +61,21 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
                 // console.log(`emiting event: ${receivedMsg}`)
                 this.eventService.emitEvent(receivedMsg.message)
             }
+            else if (receivedMsg.type == MessageType.QUICK_ACTION) {
+                this.updateQuickActions(receivedMsg.message)
+            }
         });
+    }
+
+    updateQuickActions(message: string) {
+        if (!this.quickActions.includes(message)) {
+            this.quickActions.unshift(message);
+        }
+
+        if (this.quickActions.length > this.maxSizeQuickActions) {
+            // Remove elements from the back of the array
+            this.quickActions.splice(this.maxSizeQuickActions);
+        }
     }
 
     ngOnDestroy() {
@@ -82,6 +102,12 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
         // this.scrollToBottom();
     }
 
+    // For Quick Actions Bubbles
+    quickAction(action: string) {
+        this.userInput = action;
+        this.sendMessage();
+    }
+
     // scrollToBottom() {
     //     try {
     //         this.scrollableAreaRef.nativeElement.scrollTop = this.scrollableAreaRef.nativeElement.scrollHeight;
@@ -103,11 +129,10 @@ export enum MessageType {
     STREAM_MSG = "STREAM_MSG",
     COMMAND = "COMMAND",
     CLIENT_QUESTION = "CLIENT_QUESTION",
+    QUICK_ACTION = "QUICK_ACTION",
 }
 
 export enum MessageSender {
     HUMAN = 'HUMAN',
     AI = 'AI',
 }
-
-

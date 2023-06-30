@@ -20,10 +20,16 @@
     </ng-template>
   </div>
 </mat-list>
+<!-- Quick actions -->
+<div class="quick-actions">
+  <button mat-raised-button color="primary" type="submit" *ngFor="let action of quickActions"
+    (click)="quickAction(action)">
+    {{ action }}
+  </button>
+</div>
 <form (ngSubmit)="sendMessage()">
   <div class="row">
     <div class="col">
-
       <mat-form-field class="full-width">
         <textarea matInput [disabled]="loading" (keyup.enter)="sendMessage()" #textAreaRef [autofocus]="false" rows="2"
           maxLength="512" id="userInput" name="userInput"
