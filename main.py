@@ -29,7 +29,7 @@ app = FastAPI()
 # use below line for production.
 # sio: socketio.AsyncServer = socketio.AsyncServer(async_mode="asgi")
 # use below line for development to enable CORS.
-sio: socketio.AsyncServer = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="http://localhost:4200")
+sio: socketio.AsyncServer = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=['http://localhost:4200', 'https://car-search-ai.fly.dev'])
 socketio_app = socketio.ASGIApp(sio, app)
 # mount socket.io on /sock.
 app.mount("/sock", socketio_app)
