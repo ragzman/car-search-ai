@@ -50,7 +50,7 @@ async def startup_event():
     logging.info("loading vectorstore")
     if not Path("vectorstore.pkl").exists():
         raise ValueError("vectorstore.pkl does not exist, please run ingest.py first")
-    with open("vectorstore.pkl", "rb") as f:
+    with open("vectorStore/holthelaw-blogs-markdown-vectorStore.pkl", "rb") as f:
         global vectorstore
         vectorstore = pickle.load(f)
 
@@ -89,9 +89,16 @@ async def chat(sid, data):
     k = 2
     docs = await queryDocs(reinterpretedQuestion, vectorstore, k)
 
+    # send command with URL of the related page.
+    command_msg = ChatMessage(
+        sender=MessageSender.AI, message=docs[0].metadata['url'], type=MessageType.COMMAND
+    )
+    await sio.emit("chat", command_msg.toJson(), room=sid)
+
+
     chain: ConversationChain = createChain(sid)
     await chain.acall(
-        {"question": reinterpretedQuestion, "context": docs},
+        {"question": reinterpretedQuestion, "context": docs[0].page_content},
         callbacks=[StreamingLLMCallbackHandler(sid, sio)],
     )
     # logging.info("Chain complete. ")
@@ -99,16 +106,12 @@ async def chat(sid, data):
         sender=MessageSender.AI, message="", type=MessageType.STREAM_END
     )
     await sio.emit("chat", end_resp.toJson(), room=sid)
-    # TODO: change format of this command message.
-    command_msg = ChatMessage(
-        sender=MessageSender.AI, message="home", type=MessageType.COMMAND
-    )
-    await sio.emit("chat", command_msg.toJson(), room=sid)
-    # TODO: generate quick actions and remove the random letters
-    quick_action = ChatMessage(
-        sender=MessageSender.AI, message=''.join(random.choice(string.ascii_letters) for _ in range(5)), type=MessageType.QUICK_ACTION
-    )
-    await sio.emit("chat", quick_action.toJson(), room=sid)
+    
+    # # TODO: generate quick actions and remove the random letters
+    # quick_action = ChatMessage(
+    #     sender=MessageSender.AI, message=''.join(random.choice(string.ascii_letters) for _ in range(5)), type=MessageType.QUICK_ACTION
+    # )
+    # await sio.emit("chat", quick_action.toJson(), room=sid)
     # logging.info("Done. ")
 
 
