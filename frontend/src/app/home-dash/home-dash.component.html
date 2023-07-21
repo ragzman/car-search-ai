@@ -1,6 +1,6 @@
 <div class="grid-container">
-  <mat-grid-list cols="2" rowHeight="350px">
-    <mat-grid-tile [colspan]="2" [rowspan]="1">
+  <mat-grid-list cols="2" >
+    <mat-grid-tile >
       <mat-card class="dashboard-card">
         <mat-card-header>
           <mat-card-title>
@@ -12,22 +12,11 @@
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>
-    <!-- <mat-grid-tile [colspan]="1" [rowspan]="1">
-      <mat-card class="dashboard-card">
-        <mat-card-header>
-          <mat-card-title>
-            Home
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="dashboard-card-content">
-          <markdown [src]="'/assets/posts/home.md'">
-          </markdown>
-        </mat-card-content>
-      </mat-card>
-    </mat-grid-tile> -->
 
-    <mat-grid-tile *ngFor="let card of cards | async" [colspan]="card.cols" [rowspan]="card.rows">
-      <mat-card class="dashboard-card">
+
+    <mat-grid-tile *ngFor="let card of cards | async" >
+  <iframe src="https://holthelaw.com" height="100%" width="100%"></iframe>
+      <!-- <mat-card class="dashboard-card">
         <mat-card-header>
           <mat-card-title>
             {{card.title}}
@@ -41,12 +30,20 @@
           </mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content">
-          <!-- <div>Card Content Here</div> -->
           <markdown [src]="card.url">
           </markdown>
         </mat-card-content>
-      </mat-card>
+      </mat-card> -->
     </mat-grid-tile>
   </mat-grid-list>
-  <app-contact-us></app-contact-us>
+  <!-- <app-contact-us></app-contact-us> -->
+
+  <!-- <mat-grid-list cols="2" rowHeight="200px">
+  <mat-grid-tile>
+    <div style="background-color: lightblue;">Column 1</div>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <div style="background-color: lightgreen;">Column 2</div>
+  </mat-grid-tile>
+</mat-grid-list> -->
 </div>
