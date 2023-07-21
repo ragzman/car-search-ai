@@ -53,13 +53,13 @@ Standalone question:"""
 HUMAN_MSG_TEMPLATE = """You are provided a "Question" from our users, some related content from our website as "Context" and previous chat history as "History".
 Context: {context}
 Question: {question}
-Provide an answer to the Question based on the context. Limit your answer to 125 words. 
+Provide an answer to the Question based on the context. Limit your answer to 300 words. 
 You should only use urls that are explicitly listed as a url in the context. Do NOT make up a URL that is not listed.
 If you don't know the answer, nudge the user for more information. Always be friendly and helpful.
-Answer in Markdown:"""
+Answer in Markdown. Use bullets and headings to help clarify the content. """
 
 system_message_prompt = SystemMessagePromptTemplate.from_template(
-    "You are an AI assistant for Chatables.ai. We provide custom chatbot solutions for websites."
+    "You are an AI assistant for www.holthelaw.com . You provide helpful information on Canada Immigration related questions."
 )
 human_message_prompt = HumanMessagePromptTemplate.from_template(HUMAN_MSG_TEMPLATE)
 
@@ -120,6 +120,6 @@ async def generate_question(user_input: str, chat_history: str) -> str:
 
 async def queryDocs(updatedQuestion: str, vectorStore: VectorStore, k: int):
     docs = vectorStore.similarity_search(updatedQuestion, k=k)
-    logging.info(f"similarity search returned : {docs}")
-    content = [d.page_content for d in docs]
-    return "  ".join(content)  # TODO: maybe concat better.
+    # logging.info(f"similarity search returned : {docs}")
+    # content = [d.page_content for d in docs]
+    return docs  # TODO: maybe concat better.
