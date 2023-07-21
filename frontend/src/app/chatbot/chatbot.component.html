@@ -1,49 +1,52 @@
 <!-- <mat-list class="chat-history" #scrollableAreaRef> -->
-<mat-list class="chat-history" scrollToBottom [trigger]="chatHistory.length+150">
-  <div *ngFor="let msg of chatHistory; let index = index"
-    [ngClass]="{'message-container': true, 'fade-in': index === chatHistory.length}">
-    <ng-container *ngIf="msg.sender === 'AI'; else userMessage">
-      <div class="message">
-        <img src="assets/icons/bot.png" alt="bot" width="25" height="25" class="bot-icon" />
-        <div class="message-text" markdown [data]="msg.message" [inline]="true">
+<div class="chatbot">
+  <mat-list class="chat-history" scrollToBottom [trigger]="chatHistory.length+150"
+    [style.max-height]="maxChatHistoryHeight">
+    <div *ngFor="let msg of chatHistory; let index = index"
+      [ngClass]="{'message-container': true, 'fade-in': index === chatHistory.length}">
+      <ng-container *ngIf="msg.sender === 'AI'; else userMessage">
+        <div class="message">
+          <img src="assets/icons/bot.png" alt="bot" width="25" height="25" class="bot-icon" />
+          <div class="message-text" markdown [data]="msg.message" [inline]="true">
+          </div>
         </div>
-      </div>
-    </ng-container>
+      </ng-container>
 
-    <ng-template #userMessage>
-      <div class="message">
-        <img src="assets/icons/usericon.png" alt="Human" width="25" height="25" class="user-icon" />
-        <div class="message-text">
-          {{ msg.message}}
+      <ng-template #userMessage>
+        <div class="message">
+          <img src="assets/icons/usericon.png" alt="Human" width="25" height="25" class="user-icon" />
+          <div class="message-text">
+            {{ msg.message}}
+          </div>
         </div>
+      </ng-template>
+    </div>
+  </mat-list>
+  <!-- Quick actions -->
+  <div class="quick-actions">
+    <button mat-raised-button color="primary" type="submit" *ngFor="let action of quickActions"
+      (click)="quickAction(action)">
+      {{ action }}
+    </button>
+  </div>
+  <form (ngSubmit)="sendMessage()" class="chatbot-form">
+    <div class="row">
+      <div class="col">
+        <mat-form-field class="full-width">
+          <textarea matInput [disabled]="loading" (keyup.enter)="sendMessage()" #textAreaRef [autofocus]="false"
+            rows="2" maxLength="512" id="userInput" name="userInput"
+            [placeholder]="loading ? 'Waiting for response...' : 'Type your question...'" [(ngModel)]="userInput"
+            class="mat-input-element"></textarea>
+        </mat-form-field>
       </div>
-    </ng-template>
-  </div>
-</mat-list>
-<!-- Quick actions -->
-<div class="quick-actions">
-  <button mat-raised-button color="primary" type="submit" *ngFor="let action of quickActions"
-    (click)="quickAction(action)">
-    {{ action }}
-  </button>
+      <div class="col">
+        <mat-card-actions>
+          <button mat-raised-button color="primary" type="submit" [disabled]="loading">Submit</button>
+        </mat-card-actions>
+      </div>
+    </div>
+  </form>
 </div>
-<form (ngSubmit)="sendMessage()">
-  <div class="row">
-    <div class="col">
-      <mat-form-field class="full-width">
-        <textarea matInput [disabled]="loading" (keyup.enter)="sendMessage()" #textAreaRef [autofocus]="false" rows="2"
-          maxLength="512" id="userInput" name="userInput"
-          [placeholder]="loading ? 'Waiting for response...' : 'Type your question...'" [(ngModel)]="userInput"
-          class="mat-input-element"></textarea>
-      </mat-form-field>
-    </div>
-    <div class="col">
-      <mat-card-actions>
-        <button mat-raised-button color="primary" type="submit" [disabled]="loading">Submit</button>
-      </mat-card-actions>
-    </div>
-  </div>
-</form>
 
 <!-- Old Chatbox Code -->
 <!-- <div>

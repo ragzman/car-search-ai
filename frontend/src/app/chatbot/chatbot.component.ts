@@ -29,11 +29,18 @@ export class ChatbotComponent implements OnInit, AfterViewChecked, OnDestroy {
     maxSizeQuickActions: number = 5;
     userInput: string = '';
     loading: boolean = false;
+    maxChatHistoryHeight: string;
     private socketSubscription: Subscription | undefined;
     @ViewChild('scrollableAreaRef', { static: false }) scrollableAreaRef!: ElementRef;
 
 
-    constructor(private chatService: ChatService, private eventService: EventService) { }
+    constructor(private chatService: ChatService, private eventService: EventService) {
+        // Calculate the dynamic max-height value here based on your requirements
+        // For example, you can set it to a percentage of the viewport height
+        const percentageOfViewportHeight = 60; // Adjust this value as needed
+        const viewportHeight = window.innerHeight;
+        this.maxChatHistoryHeight = `${(percentageOfViewportHeight / 100) * viewportHeight}px`;
+    }
 
     ngOnInit() {
         // default chatbot welcome message

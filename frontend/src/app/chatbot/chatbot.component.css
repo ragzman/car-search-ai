@@ -16,10 +16,29 @@
   margin-right: 0;
 }
 
+.chatbot {
+  /* height: 50px; */
+  overflow-y: auto;
+}
+
 .chat-history {
-  height: 6rem;
+  /* max-height: 250px; */
+  display: block;
+  margin-bottom: 60px;
   /* Set your desired height here */
   overflow-y: auto;
+}
+
+.chatbot-form {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  /* You can set the background color you want for the form */
+  padding: 10px;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  /* Optional: Add a subtle shadow at the bottom */
 }
 
 .message {
